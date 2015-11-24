@@ -1,0 +1,2 @@
+export PATH=$PATH:~/bug-finding/defects4j/framework/bin
+export PATH=$PATH:~/bug-finding/findbugs-3.0.1/bin/
