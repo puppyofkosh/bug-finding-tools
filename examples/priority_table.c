@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
+#include <assert.h>
+#include <memory.h>
 
 #define MAXPRIORITY 10
 
@@ -18,6 +20,8 @@ void list_init(Node* n) {
 }
 
 void list_prepend(Node* existing, int new_data) {
+    // constraint: existing->next != NULL
+
     Node* newnode = malloc(sizeof(Node));
     newnode->data = new_data;
     newnode->next = existing->next;
@@ -60,7 +64,9 @@ void print_table(Node* table) {
 }
 
 int main() {
-    Node* table = malloc((MAXPRIORITY+1) * sizeof(Node));
+    const int sz = (MAXPRIORITY+1) * sizeof(Node);
+    Node* table = malloc(sz);
+    memset(table, 0, sz);
 
     initialize(table);
 
