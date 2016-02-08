@@ -2,3 +2,5 @@ defects4j/*
 findbugs-3.0.1/*
 *~
 *.pyc
+*.class
+*.gz
