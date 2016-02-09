@@ -1,0 +1,8 @@
+get these packages:
+
+binutils-dev
+valgrind
+
+Make sure to remove the _bfd_int64_low/high calls in readelf.c. Replace:
+_bfd_int64_low(x) with
+x
