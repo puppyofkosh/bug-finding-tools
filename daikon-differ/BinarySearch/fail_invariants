@@ -91,14 +91,19 @@ Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
 Main.main(java.lang.String[]):::ENTER
 args has only one value
 args.getClass().getName() == java.lang.String[].class
-args[] == []
-args[].toString == []
+args[] contains no nulls and has only one value, of length 1
+args[] elements has only one value
+args[].toString == [both]
+args[].toString elements == "both"
+size(args[]) == 1
 ===========================================================================
 Main.main(java.lang.String[]):::EXIT
 Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
 args[] == orig(args[])
-args[] == []
-args[].toString == []
+args[] contains no nulls and has only one value, of length 1
+args[] elements has only one value
+args[].toString == [both]
+args[].toString elements == "both"
 ===========================================================================
 Main.passingTests():::ENTER
 ===========================================================================

@@ -83,7 +83,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        assert args[0].equals("pass") || args[0].equals("both");
+        
         passingTests();
-        //failingTests();
+        if (args[0].equals("both")) {
+            failingTests();
+        }
     }
 }
