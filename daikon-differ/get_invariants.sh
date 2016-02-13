@@ -2,6 +2,11 @@
 
 cd $1
 javac -g *.java
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+
 
 main_class=Main
 command="java daikon.Chicory --daikon-args='--no_text_output --config=../config.txt' --daikon $main_class"

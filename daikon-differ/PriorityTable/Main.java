@@ -10,6 +10,20 @@ public class Main {
         }
     }
 
+    private static void initialize_loop_invariant(int i, Node priorityTable[]) {
+    }
+
+    private static void initialize_return_invariant(Node priorityTable[]) {
+    }
+
+    private static void insert_return_invariant(int prio, int val,
+                                                Node n, Node priorityTable[]) {
+    }
+
+    private static void insert_enter_invariant(int prio, int val,
+                                               Node priorityTable[]) {
+    }
+
     private static class PriorityTable {
         public static final int MAXPRIO = 10;
 
@@ -18,17 +32,21 @@ public class Main {
         public PriorityTable() {
             // bug: should be <=
             for (int i = 0; i < MAXPRIO; i++) {
+                initialize_loop_invariant(i, priorityTable);
                 priorityTable[i] = new Node(-1);
             }
+            initialize_return_invariant(priorityTable);
         }
 
         private void insert(int prio, int val) {
+            insert_enter_invariant(prio, val, priorityTable);
             Node n = new Node(val);
-
             n.next = priorityTable[prio].next;
             priorityTable[prio].next = n;
+            insert_return_invariant(prio, val, n, priorityTable);
         }
 
+        // Not instrumented. Used for debugging.
         public String toString() {
             String s = "";
             for (int i = 0; i < MAXPRIO; i++) {
@@ -60,6 +78,14 @@ public class Main {
         table.insert(9, 10);
         table.insert(0, 2);
         table.insert(1, 0);
+
+        table = new PriorityTable();
+        table.insert(3, 100);
+        table.insert(0, 50);
+        table.insert(4, 22);
+        table.insert(4, 23);
+        table.insert(4, 24);
+
     }
 
     private static void failingTests() {
@@ -71,10 +97,12 @@ public class Main {
     public static void main(String[] args) {
         passingTests();
 
-        try {
-            failingTests();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (args[0].equals("both")) {
+            try {
+                failingTests();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

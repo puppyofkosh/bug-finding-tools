@@ -1,0 +1,123 @@
+===========================================================================
+Main$Node:::OBJECT
+this == this.next
+this.data == this.next.data
+this.data == this.next.next.data
+this.next == this.next.next
+this.next == this.next.next.next
+this.data >= -1
+===========================================================================
+Main$Node.Main$Node(int):::ENTER
+d >= -1
+===========================================================================
+Main$Node.Main$Node(int):::EXIT
+this.data == orig(d)
+===========================================================================
+Main$PriorityTable:::CLASS
+===========================================================================
+Main$PriorityTable:::OBJECT
+Main$PriorityTable.MAXPRIO == size(this.priorityTable[])-1
+this.priorityTable != null
+this.priorityTable.getClass().getName() == Main$Node[].class
+this.priorityTable[].getClass().getName() == [Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, null]
+size(this.priorityTable[]) == 11
+this.priorityTable[Main$PriorityTable.MAXPRIO] == null
+this.priorityTable[Main$PriorityTable.MAXPRIO-1] != null
+===========================================================================
+Main$PriorityTable.Main$PriorityTable():::EXIT
+===========================================================================
+Main$PriorityTable.insert(int, int):::ENTER
+this.priorityTable[prio] != null
+Main$PriorityTable.MAXPRIO > prio
+val != size(this.priorityTable[])
+===========================================================================
+Main$PriorityTable.insert(int, int):::EXIT
+this.priorityTable == orig(this.priorityTable)
+this.priorityTable[] == orig(this.priorityTable[])
+this.priorityTable[orig(prio)] != null
+this.priorityTable.getClass().getName() == orig(this.priorityTable.getClass().getName())
+orig(val) != size(this.priorityTable[])
+===========================================================================
+Main.initialize_loop_invariant(int, Main$Node[]):::ENTER
+i >= 0
+priorityTable != null
+priorityTable.getClass().getName() == Main$Node[].class
+size(priorityTable[]) == 11
+priorityTable[i] == null
+i < size(priorityTable[])-1
+===========================================================================
+Main.initialize_loop_invariant(int, Main$Node[]):::EXIT
+priorityTable[] == orig(priorityTable[])
+priorityTable[orig(i)] == null
+orig(i) < size(priorityTable[])-1
+===========================================================================
+Main.initialize_return_invariant(Main$Node[]):::ENTER
+priorityTable.getClass().getName() == Main$Node[].class
+size(priorityTable[]) == 11
+===========================================================================
+Main.initialize_return_invariant(Main$Node[]):::EXIT
+priorityTable[] == orig(priorityTable[])
+===========================================================================
+Main.insert_enter_invariant(int, int, Main$Node[]):::ENTER
+priorityTable != null
+priorityTable.getClass().getName() == Main$Node[].class
+size(priorityTable[]) == 11
+priorityTable[prio] != null
+prio < size(priorityTable[])-1
+val != size(priorityTable[])
+===========================================================================
+Main.insert_enter_invariant(int, int, Main$Node[]):::EXIT
+priorityTable[] == orig(priorityTable[])
+priorityTable[orig(prio)] != null
+orig(prio) < size(priorityTable[])-1
+===========================================================================
+Main.insert_return_invariant(int, int, Main$Node, Main$Node[]):::ENTER
+val == n.data
+n != null
+n.next != null
+n.next.data >= -1
+n.next.next != null
+priorityTable != null
+priorityTable.getClass().getName() == Main$Node[].class
+size(priorityTable[]) == 11
+priorityTable[prio] != null
+prio != n.next.data
+prio < size(priorityTable[])-1
+val > n.next.data
+val != size(priorityTable[])
+n.next.data != size(priorityTable[])
+n.next.data != size(priorityTable[])-1
+===========================================================================
+Main.insert_return_invariant(int, int, Main$Node, Main$Node[]):::EXIT
+n.data == orig(val)
+n.data == orig(n.data)
+n.next == orig(n.next)
+n.next.data == orig(n.next.data)
+n.next.next == orig(n.next.next)
+priorityTable[] == orig(priorityTable[])
+n.next != null
+n.next.data >= -1
+n.next.next != null
+priorityTable[orig(prio)] != null
+n.data > n.next.data
+n.data != orig(size(priorityTable[]))
+n.next.data != orig(prio)
+n.next.data != size(priorityTable[])-1
+n.next.data != orig(size(priorityTable[]))
+orig(prio) < size(priorityTable[])-1
+===========================================================================
+Main.main(java.lang.String[]):::ENTER
+args has only one value
+args.getClass().getName() == java.lang.String[].class
+args[] contains no nulls and has only one value, of length 1
+args[] elements has only one value
+args[].toString == [pass]
+args[].toString elements == "pass"
+size(args[]) == 1
+===========================================================================
+Main.main(java.lang.String[]):::EXIT
+args[] == orig(args[])
+args[] contains no nulls and has only one value, of length 1
+args[] elements has only one value
+args[].toString == [pass]
+args[].toString elements == "pass"
