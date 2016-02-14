@@ -1,0 +1,204 @@
+===========================================================================
+Main:::CLASS
+Main.$assertionsDisabled == false
+===========================================================================
+Main.bsearch(int[], int):::ENTER
+a != null
+a[] sorted by <=
+===========================================================================
+Main.bsearch(int[], int):::EXIT42
+orig(key) == a[return]
+orig(key) == orig(a[post(return)])
+===========================================================================
+Main.bsearch(int[], int):::EXIT49
+return == -1
+orig(key) != size(a[])-1
+===========================================================================
+Main.bsearch(int[], int):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+a[] == orig(a[])
+(return == -1)  ==>  (orig(key) != size(a[])-1)
+a[] sorted by <=
+return >= -1
+return < size(a[])-1
+===========================================================================
+Main.end_loop_inv(int, int[], int, int, int):::ENTER
+a != null
+a[] sorted by <=
+lo >= 0
+mid >= 0
+key != size(a[])-1
+key != a[mid]
+lo <= size(a[])-1
+mid <= size(a[])-1
+hi <= size(a[])
+hi != size(a[])-1
+size(a[]) != a[lo]
+size(a[])-1 != a[lo]
+===========================================================================
+Main.end_loop_inv(int, int[], int, int, int):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+a[] == orig(a[])
+a[] sorted by <=
+orig(key) != size(a[])-1
+orig(key) != a[orig(mid)]
+orig(lo) <= size(a[])-1
+orig(mid) <= size(a[])-1
+orig(hi) != size(a[])-1
+size(a[])-1 != a[orig(lo)]
+orig(size(a[])) != a[orig(lo)]
+===========================================================================
+Main.inc_lo_loop_inv(int, int[], int, int, int):::ENTER
+a[lo-1] == a[mid]
+a[] sorted by <=
+key != size(a[])-1
+key > a[mid]
+key != a[hi-1]
+lo - mid - 1 == 0
+lo <= size(a[])-1
+mid <= hi
+mid < size(a[])-1
+mid <= a[lo]
+hi <= size(a[])
+hi != size(a[])-1
+size(a[]) != a[lo]
+size(a[]) != a[mid]
+size(a[]) != a[hi-1]
+size(a[])-1 != a[lo]
+size(a[])-1 != a[mid]
+size(a[])-1 != a[hi-1]
+a[lo] % a[mid] == 0
+a[lo] > a[mid]
+a[lo] != a[hi-1]
+===========================================================================
+Main.inc_lo_loop_inv(int, int[], int, int, int):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+a[] == orig(a[])
+a[orig(lo)-1] == a[orig(mid)]
+a[orig(mid)] == orig(a[post(lo)-1])
+a[orig(mid)] == orig(a[lo-1])
+a[] sorted by <=
+orig(key) != size(a[])-1
+orig(key) > a[orig(mid)]
+orig(key) != a[orig(hi)-1]
+orig(lo) <= size(a[])-1
+orig(mid) < size(a[])-1
+orig(mid) <= a[orig(lo)]
+orig(hi) != size(a[])-1
+size(a[])-1 != a[orig(lo)]
+size(a[])-1 != a[orig(mid)]
+size(a[])-1 != a[orig(hi)-1]
+orig(size(a[])) != a[orig(lo)]
+orig(size(a[])) != a[orig(mid)]
+orig(size(a[])) != a[orig(hi)-1]
+a[orig(lo)] % a[orig(mid)] == 0
+a[orig(lo)] > a[orig(mid)]
+a[orig(lo)] != a[orig(hi)-1]
+===========================================================================
+Main.main(java.lang.String[]):::ENTER
+args has only one value
+args.getClass().getName() == java.lang.String[].class
+args[] contains no nulls and has only one value, of length 1
+args[] elements has only one value
+args[].toString == [pass]
+args[].toString elements == "pass"
+size(args[]) == 1
+===========================================================================
+Main.main(java.lang.String[]):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+args[] == orig(args[])
+args[] contains no nulls and has only one value, of length 1
+args[] elements has only one value
+args[].toString == [pass]
+args[].toString elements == "pass"
+===========================================================================
+Main.passingTests():::ENTER
+===========================================================================
+Main.passingTests():::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+===========================================================================
+Main.reduce_hi_loop_inv(int, int[], int, int, int):::ENTER
+a != null
+a[] sorted by <=
+lo >= 0
+key != size(a[])-1
+key < a[mid]
+lo <= mid
+lo < size(a[])-1
+lo != a[lo]
+lo != a[mid]
+mid - hi - 1 == 0
+mid <= size(a[])-1
+hi < size(a[])-1
+hi <= a[mid]
+size(a[]) != a[lo]
+size(a[])-1 != a[lo]
+a[lo] <= a[mid]
+===========================================================================
+Main.reduce_hi_loop_inv(int, int[], int, int, int):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+a[] == orig(a[])
+a[] sorted by <=
+orig(key) != size(a[])-1
+orig(key) < a[orig(mid)]
+orig(lo) < size(a[])-1
+orig(lo) != a[orig(lo)]
+orig(lo) != a[orig(mid)]
+orig(mid) <= size(a[])-1
+orig(hi) < size(a[])-1
+orig(hi) <= a[orig(mid)]
+size(a[])-1 != a[orig(lo)]
+orig(size(a[])) != a[orig(lo)]
+a[orig(lo)] <= a[orig(mid)]
+===========================================================================
+Main.return_fail_inv(int, int, int, int[]):::ENTER
+arr[] sorted by <=
+l - h - 1 == 0
+l <= size(arr[])-1
+l != arr[l]
+h < size(arr[])-1
+h <= arr[l]
+k != size(arr[])-1
+k < arr[l]
+size(arr[]) != arr[l]
+size(arr[])-1 != arr[l]
+===========================================================================
+Main.return_fail_inv(int, int, int, int[]):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+arr[] == orig(arr[])
+arr[] sorted by <=
+orig(l) <= size(arr[])-1
+orig(l) != arr[orig(l)]
+orig(h) < size(arr[])-1
+orig(h) <= arr[orig(l)]
+orig(k) != size(arr[])-1
+orig(k) < arr[orig(l)]
+size(arr[])-1 != arr[orig(l)]
+orig(size(arr[])) != arr[orig(l)]
+===========================================================================
+Main.start_loop_inv(int, int[], int, int, int):::ENTER
+a != null
+a[] sorted by <=
+lo >= 0
+mid >= 0
+lo <= mid
+lo <= hi
+lo < size(a[])-1
+mid <= hi
+mid <= size(a[])-1
+hi <= size(a[])
+hi != size(a[])-1
+size(a[]) != a[lo]
+size(a[])-1 != a[lo]
+a[lo] <= a[mid]
+===========================================================================
+Main.start_loop_inv(int, int[], int, int, int):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+a[] == orig(a[])
+a[] sorted by <=
+orig(lo) < size(a[])-1
+orig(mid) <= size(a[])-1
+orig(hi) != size(a[])-1
+size(a[])-1 != a[orig(lo)]
+orig(size(a[])) != a[orig(lo)]
+a[orig(lo)] <= a[orig(mid)]

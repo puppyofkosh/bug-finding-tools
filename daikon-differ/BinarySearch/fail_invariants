@@ -6,28 +6,20 @@ Main.bsearch(int[], int):::ENTER
 a != null
 a[] sorted by <=
 ===========================================================================
-Main.bsearch(int[], int):::EXIT15
-return == size(a[])-1
-return == orig(size(a[]))-1
-orig(key) == orig(size(a[]))
-a[] == []
-orig(a) has only one value
-===========================================================================
-Main.bsearch(int[], int):::EXIT36
+Main.bsearch(int[], int):::EXIT33
 orig(key) == a[return]
 orig(key) == orig(a[post(return)])
-return < size(a[])-1
 ===========================================================================
-Main.bsearch(int[], int):::EXIT46
+Main.bsearch(int[], int):::EXIT43
 return == -1
-return < size(a[])-1
 orig(key) != size(a[])-1
 ===========================================================================
 Main.bsearch(int[], int):::EXIT
 Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
 a[] == orig(a[])
+(return == -1)  ==>  (orig(key) != size(a[])-1)
 a[] sorted by <=
-return <= size(a[])-1
+return < size(a[])-1
 ===========================================================================
 Main.dummy_fn(int, int, int, int, int):::ENTER
 l >= 0
