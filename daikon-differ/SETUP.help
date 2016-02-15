@@ -1,0 +1,16 @@
+To set up daikon follow the instructions here:
+http://plse.cs.washington.edu/daikon/download/doc/developer.html
+
+Install the packages, and pull from their git repo here:
+https://github.com/codespecs/daikon
+
+Do 
+$ make compile
+
+# I have to do this after the first time I compile
+$ make very-clean
+
+# Then
+$ make daikon.jar
+
+There are some instructions in the daikon/README.source which can be helpful too, but mainly follow the guide above

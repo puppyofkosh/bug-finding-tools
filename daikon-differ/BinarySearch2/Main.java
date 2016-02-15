@@ -1,3 +1,5 @@
+import daikon.Quant;
+
 public class Main {
 
     private static void start_loop_inv(int key, int a[], int lo, int mid, int hi) {
@@ -23,10 +25,6 @@ public class Main {
         int hi = a.length;
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
-            // INVARIANT BROKEN:
-            // mid == hi
-            // mid depends on lo and hi, so problem must be with either lo or hi
-            
             // forces daikon to compute invariants about dummy_fn input and output,
             // which are in this case, loop invariants.
             start_loop_inv(key, a, lo, mid, hi);
@@ -58,6 +56,8 @@ public class Main {
         assert bsearch(list, 3) == 2;
         assert bsearch(list, 2) == 1;
         assert bsearch(list, -2) == -1;
+        assert bsearch(list, 4) == 3;
+
 
         int[] list2 = {1, 1, 2, 10, 50, 1000};
         assert bsearch(list2, 0) == -1;
@@ -72,9 +72,16 @@ public class Main {
         assert bsearch(list3, 5) == -1;
         assert bsearch(list3, 2) == -1;
         assert bsearch(list3, -500) == 0;
+        
+        int[] list4 = {2,3,4};
+        assert bsearch(list4, 4) == 2;
 
-        //int[] list4 = {};
-        //assert bsearch(list4, 0) == -1;
+        int[] list5 = {1, 4, 5, 6};
+        assert bsearch(list5, 1) == 0;
+        assert bsearch(list5, 4) == 1;
+        assert bsearch(list5, 0) == -1;
+
+        // No empty case, because it's "path" is different from othe cases
 
         int[] list6 = {-1, 0, 1, 1, 2, 4, 8, 11};
         assert bsearch(list6, 8) == 6;
@@ -83,12 +90,9 @@ public class Main {
 
     private static void failingTests() {
         try {
-            int[] list = {1, 2};
-            int ind = bsearch(list, 1);
-            System.out.println(ind == 0);
-            //int[] list = {1,2,3,4};
-            //int ind = bsearch(list, 11);
-            //System.out.println(ind == -1);
+            int[] list = {20, 32, 53};
+            int ind = bsearch(list, 400);
+            System.out.println(ind == -1);
         } catch (Exception e) {
             e.printStackTrace();
         }

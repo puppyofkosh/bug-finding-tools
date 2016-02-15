@@ -6,11 +6,11 @@ Main.bsearch(int[], int):::ENTER
 a != null
 a[] sorted by <=
 ===========================================================================
-Main.bsearch(int[], int):::EXIT42
+Main.bsearch(int[], int):::EXIT43
 orig(key) == a[return]
 orig(key) == orig(a[post(return)])
 ===========================================================================
-Main.bsearch(int[], int):::EXIT49
+Main.bsearch(int[], int):::EXIT50
 return == -1
 return < size(a[])-1
 orig(key) != size(a[])-1
@@ -29,14 +29,13 @@ a != null
 a[] sorted by <=
 lo >= 0
 mid >= 0
+hi >= -1
 key != size(a[])-1
 key != a[mid]
-lo <= size(a[])-1
+lo <= size(a[])
 mid <= size(a[])-1
 hi <= size(a[])
 hi != size(a[])-1
-size(a[]) != a[lo]
-size(a[])-1 != a[lo]
 ===========================================================================
 Main.end_loop_inv(int, int[], int, int, int):::EXIT
 Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
@@ -44,11 +43,8 @@ a[] == orig(a[])
 a[] sorted by <=
 orig(key) != size(a[])-1
 orig(key) != a[orig(mid)]
-orig(lo) <= size(a[])-1
 orig(mid) <= size(a[])-1
 orig(hi) != size(a[])-1
-size(a[])-1 != a[orig(lo)]
-orig(size(a[])) != a[orig(lo)]
 ===========================================================================
 Main.failingTests():::ENTER
 ===========================================================================
@@ -57,26 +53,20 @@ Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
 ===========================================================================
 Main.inc_lo_loop_inv(int, int[], int, int, int):::ENTER
 a[lo-1] == a[mid]
+a != null
 a[] sorted by <=
+lo >= 1
+mid >= 0
+hi >= 1
 key != size(a[])-1
 key > a[mid]
-key != a[hi-1]
 lo - mid - 1 == 0
-lo <= size(a[])-1
+lo <= size(a[])
 mid <= hi
-mid < size(a[])-1
-mid <= a[lo]
+mid <= size(a[])-1
 hi <= size(a[])
 hi != size(a[])-1
-size(a[]) != a[lo]
-size(a[]) != a[mid]
-size(a[]) != a[hi-1]
-size(a[])-1 != a[lo]
-size(a[])-1 != a[mid]
 size(a[])-1 != a[hi-1]
-a[lo] % a[mid] == 0
-a[lo] > a[mid]
-a[lo] != a[hi-1]
 ===========================================================================
 Main.inc_lo_loop_inv(int, int[], int, int, int):::EXIT
 Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
@@ -87,20 +77,9 @@ a[orig(mid)] == orig(a[lo-1])
 a[] sorted by <=
 orig(key) != size(a[])-1
 orig(key) > a[orig(mid)]
-orig(key) != a[orig(hi)-1]
-orig(lo) <= size(a[])-1
-orig(mid) < size(a[])-1
-orig(mid) <= a[orig(lo)]
+orig(mid) <= size(a[])-1
 orig(hi) != size(a[])-1
-size(a[])-1 != a[orig(lo)]
-size(a[])-1 != a[orig(mid)]
 size(a[])-1 != a[orig(hi)-1]
-orig(size(a[])) != a[orig(lo)]
-orig(size(a[])) != a[orig(mid)]
-orig(size(a[])) != a[orig(hi)-1]
-a[orig(lo)] % a[orig(mid)] == 0
-a[orig(lo)] > a[orig(mid)]
-a[orig(lo)] != a[orig(hi)-1]
 ===========================================================================
 Main.main(java.lang.String[]):::ENTER
 args has only one value
@@ -128,6 +107,8 @@ Main.reduce_hi_loop_inv(int, int[], int, int, int):::ENTER
 a != null
 a[] sorted by <=
 lo >= 0
+mid >= 0
+hi >= -1
 key != size(a[])-1
 key < a[mid]
 lo <= mid
@@ -159,6 +140,7 @@ orig(size(a[])) != a[orig(lo)]
 a[orig(lo)] <= a[orig(mid)]
 ===========================================================================
 Main.return_fail_inv(int, int, int, int[]):::ENTER
+l >= 0
 arr[] sorted by <=
 l - h - 1 == 0
 l <= size(arr[])-1
@@ -190,20 +172,14 @@ lo >= 0
 mid >= 0
 lo <= mid
 lo <= hi
-lo <= size(a[])-1
+lo <= size(a[])
 mid <= hi
-mid <= size(a[])-1
+mid <= size(a[])
 hi <= size(a[])
 hi != size(a[])-1
-size(a[])-1 != a[lo]
-a[lo] <= a[mid]
 ===========================================================================
 Main.start_loop_inv(int, int[], int, int, int):::EXIT
 Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
 a[] == orig(a[])
 a[] sorted by <=
-orig(lo) <= size(a[])-1
-orig(mid) <= size(a[])-1
 orig(hi) != size(a[])-1
-size(a[])-1 != a[orig(lo)]
-a[orig(lo)] <= a[orig(mid)]

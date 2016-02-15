@@ -1,0 +1,195 @@
+===========================================================================
+Main:::CLASS
+Main.$assertionsDisabled == false
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::ENTER
+s != null
+p != null
+s.toString.length() >= 0
+p.toString.length() >= 0
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT15
+(return == false)  <==>  (s.toString > p.toString)
+(return == false)  <==>  (s.toString.length() > p.toString.length())
+(return == false)  <==>  (s.toString.length() >= 1)
+(return == false)  ==>  (Main.$assertionsDisabled == return)
+(return == true)  <==>  (s.toString == p.toString)
+(return == true)  <==>  (s.toString.length() == 0)
+(return == true)  <==>  (s.toString.length() == p.toString.length())
+(return == true)  ==>  (s.toString == "")
+p.toString == ""
+p.toString.length() == 0
+s.toString >= p.toString
+s.toString.length() >= p.toString.length()
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT15;condition="return == true"
+s.toString.length() == p.toString.length()
+s.toString.length() == orig(p.toString).length()
+s.toString == ""
+s.toString.length() == 0
+s.toString == p.toString
+s.toString == orig(p.toString)
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT15;condition="not(return == true)"
+s.toString > p.toString
+s.toString.length() > p.toString.length()
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT21
+Main.$assertionsDisabled == return
+s.toString != p.toString
+s.toString.length() >= p.toString.length()
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT21;condition="not(return == true)"
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT24
+(return == false)  ==>  (Main.$assertionsDisabled == return)
+(return == true)  ==>  (s.toString.length() <= p.toString.length())
+(return == true)  ==>  (s.toString.length() >= 1)
+s.toString.length() >= 1
+p.toString.length() >= 1
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT24;condition="return == true"
+s.toString.length() <= p.toString.length()
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT24;condition="not(return == true)"
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT36
+return == true
+s.toString != p.toString
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT36;condition="return == true"
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+s.toString.length() == orig(s.toString).length()
+p.toString.length() == orig(p.toString).length()
+(return == false)  ==>  (Main.$assertionsDisabled == return)
+(return == false)  ==>  (s.toString != p.toString)
+(return == false)  ==>  (s.toString.length() >= 1)
+(return == false)  ==>  (s.toString.length() >= p.toString.length())
+s.toString.length() >= 0
+p.toString.length() >= 0
+s.toString == orig(s.toString)
+p.toString == orig(p.toString)
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT;condition="return == true"
+return == true
+===========================================================================
+Main.isMatch(java.lang.String, java.lang.String):::EXIT;condition="not(return == true)"
+Main.$assertionsDisabled == return
+s.toString.length() >= 1
+s.toString != p.toString
+s.toString.length() >= p.toString.length()
+===========================================================================
+Main.is_star_loop_inv(java.lang.String, java.lang.String, int, int):::ENTER
+len == s.toString.length()
+s != null
+p != null
+i >= -1
+s.toString != p.toString
+i < len
+===========================================================================
+Main.is_star_loop_inv(java.lang.String, java.lang.String, int, int):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+orig(len) == s.toString.length()
+p.toString.length() == orig(p.toString).length()
+s.toString != p.toString
+s.toString == orig(s.toString)
+p.toString == orig(p.toString)
+===========================================================================
+Main.main(java.lang.String[]):::ENTER
+args has only one value
+args.getClass().getName() == java.lang.String[].class
+args[] contains no nulls and has only one value, of length 1
+args[] elements has only one value
+args[].toString == [both]
+args[].toString elements == "both"
+args.getClass().getName().length() == 18
+size(args[]) == 1
+===========================================================================
+Main.main(java.lang.String[]):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+args[] == orig(args[])
+args.getClass().getName().length() == orig(args.getClass().getName()).length()
+args[] contains no nulls and has only one value, of length 1
+args[] elements has only one value
+args[].toString == [both]
+args[].toString elements == "both"
+args.getClass().getName().length() == 18
+===========================================================================
+Main.not_star_inv(java.lang.String, java.lang.String):::ENTER
+s != null
+p != null
+p.toString.length() >= 1
+===========================================================================
+Main.not_star_inv(java.lang.String, java.lang.String):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+s.toString.length() == orig(s.toString).length()
+p.toString.length() == orig(p.toString).length()
+p.toString.length() >= 1
+s.toString == orig(s.toString)
+p.toString == orig(p.toString)
+===========================================================================
+Main.not_star_recur_inv(java.lang.String, java.lang.String):::ENTER
+s != null
+p != null
+s.toString.length() >= 1
+p.toString.length() >= 1
+===========================================================================
+Main.not_star_recur_inv(java.lang.String, java.lang.String):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+s.toString.length() == orig(s.toString).length()
+p.toString.length() == orig(p.toString).length()
+s.toString.length() >= 1
+p.toString.length() >= 1
+s.toString == orig(s.toString)
+p.toString == orig(p.toString)
+===========================================================================
+Main.not_star_ret_false_inv(java.lang.String, java.lang.String):::ENTER
+s.toString != p.toString
+s.toString.length() >= p.toString.length()
+===========================================================================
+Main.not_star_ret_false_inv(java.lang.String, java.lang.String):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+s.toString.length() == orig(s.toString).length()
+p.toString.length() == orig(p.toString).length()
+s.toString != p.toString
+s.toString == orig(s.toString)
+p.toString == orig(p.toString)
+s.toString.length() >= p.toString.length()
+===========================================================================
+Main.passingTests():::ENTER
+===========================================================================
+Main.passingTests():::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+===========================================================================
+Main.ret_true_inv(java.lang.String, java.lang.String, int, int):::ENTER
+len == s.toString.length()
+i >= -1
+s.toString != p.toString
+i < len
+i - len + p.toString.length() - 1 == 0
+===========================================================================
+Main.ret_true_inv(java.lang.String, java.lang.String, int, int):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+orig(len) == s.toString.length()
+p.toString.length() == orig(p.toString).length()
+s.toString != p.toString
+s.toString == orig(s.toString)
+p.toString == orig(p.toString)
+orig(i) - orig(len) + p.toString.length() - 1 == 0
+===========================================================================
+Main.start_inv(java.lang.String, java.lang.String):::ENTER
+s != null
+p != null
+s.toString.length() >= 0
+p.toString.length() >= 0
+===========================================================================
+Main.start_inv(java.lang.String, java.lang.String):::EXIT
+Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+s.toString.length() == orig(s.toString).length()
+p.toString.length() == orig(p.toString).length()
+s.toString.length() >= 0
+p.toString.length() >= 0
+s.toString == orig(s.toString)
+p.toString == orig(p.toString)
