@@ -2,15 +2,54 @@
 Main:::CLASS
 Main.$assertionsDisabled == false
 ===========================================================================
+Main.before_loop(int, int, int, int[]):::ENTER
+h == daikon.Quant.size(arr)-1
+l == 0
+arr != null
+daikon.Quant.eltwiseLTE(arr)
+daikon.Quant.getElement_int(arr, l) == -500 || daikon.Quant.getElement_int(arr, l) == -1 || daikon.Quant.getElement_int(arr, l) == 1
+l < h
+l != daikon.Quant.getElement_int(arr, l)
+l < daikon.Quant.getElement_int(arr, h)
+l < daikon.Quant.getElement_int(arr, h-1)
+h > daikon.Quant.getElement_int(arr, l)
+h <= daikon.Quant.getElement_int(arr, h-1)
+k != daikon.Quant.getElement_int(arr, h)
+daikon.Quant.eltsGTE(arr, daikon.Quant.getElement_int(arr, l))
+daikon.Quant.eltsLTE(arr, daikon.Quant.getElement_int(arr, h))
+daikon.Quant.size(arr) <= daikon.Quant.getElement_int(arr, h)
+daikon.Quant.getElement_int(arr, l) < daikon.Quant.getElement_int(arr, h)
+daikon.Quant.getElement_int(arr, l) < daikon.Quant.getElement_int(arr, h-1)
+daikon.Quant.getElement_int(arr, h) > daikon.Quant.getElement_int(arr, h-1)
+===========================================================================
+Main.before_loop(int, int, int, int[]):::EXIT
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
+daikon.Quant.pairwiseEqual(arr, \old(arr))
+\old(h) == daikon.Quant.size(arr)-1
+daikon.Quant.eltwiseLTE(arr)
+daikon.Quant.getElement_int(arr, \old(l)) == -500 || daikon.Quant.getElement_int(arr, \old(l)) == -1 || daikon.Quant.getElement_int(arr, \old(l)) == 1
+daikon.Quant.eltsGTE(arr, daikon.Quant.getElement_int(arr, \old(l)))
+daikon.Quant.eltsLTE(arr, daikon.Quant.getElement_int(arr, \old(h)))
+\old(l) != daikon.Quant.getElement_int(arr, \old(l))
+\old(l) < daikon.Quant.getElement_int(arr, \old(h))
+\old(l) < daikon.Quant.getElement_int(arr, \old(h)-1)
+\old(h) > daikon.Quant.getElement_int(arr, \old(l))
+\old(h) <= daikon.Quant.getElement_int(arr, \old(h)-1)
+\old(k) != daikon.Quant.getElement_int(arr, \old(h))
+\old(daikon.Quant.size(arr)) <= daikon.Quant.getElement_int(arr, \old(h))
+daikon.Quant.getElement_int(arr, \old(l)) < daikon.Quant.getElement_int(arr, \old(h))
+daikon.Quant.getElement_int(arr, \old(l)) < daikon.Quant.getElement_int(arr, \old(h)-1)
+daikon.Quant.getElement_int(arr, \old(h)) > daikon.Quant.getElement_int(arr, \old(h)-1)
+===========================================================================
 Main.bsearch(int[], int):::ENTER
 a != null
 daikon.Quant.eltwiseLTE(a)
 ===========================================================================
-Main.bsearch(int[], int):::EXIT33
+Main.bsearch(int[], int):::EXIT38
 \old(key) == daikon.Quant.getElement_int(a, \result)
 \old(key) == \old(daikon.Quant.getElement_int(a, \new(\result)))
 ===========================================================================
-Main.bsearch(int[], int):::EXIT43
+Main.bsearch(int[], int):::EXIT48
 \result == -1
 \old(key) != daikon.Quant.size(a)-1
 ===========================================================================

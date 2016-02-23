@@ -41,6 +41,28 @@ public class MainWithAssertions {
         assert daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, l);
     }
 
+    private static void before_loop(int l, int h, int k, int[] arr) {
+        assert h == daikon.Quant.size(arr)-1;
+        assert l == 0;
+        assert arr != null;
+        assert daikon.Quant.eltwiseLTE(arr);
+        assert daikon.Quant.getElement_int(arr, l) == -500 || daikon.Quant.getElement_int(arr, l) == -1 || daikon.Quant.getElement_int(arr, l) == 1;
+        assert l < h;
+        assert l != daikon.Quant.getElement_int(arr, l);
+        assert l < daikon.Quant.getElement_int(arr, h);
+        assert l < daikon.Quant.getElement_int(arr, h-1);
+        assert h > daikon.Quant.getElement_int(arr, l);
+        assert h <= daikon.Quant.getElement_int(arr, h-1);
+        assert k != daikon.Quant.getElement_int(arr, h);
+        assert daikon.Quant.eltsGTE(arr, daikon.Quant.getElement_int(arr, l));
+        assert daikon.Quant.eltsLTE(arr, daikon.Quant.getElement_int(arr, h));
+        assert daikon.Quant.size(arr) <= daikon.Quant.getElement_int(arr, h);
+        assert daikon.Quant.getElement_int(arr, l) < daikon.Quant.getElement_int(arr, h);
+        assert daikon.Quant.getElement_int(arr, l) < daikon.Quant.getElement_int(arr, h-1);
+        assert daikon.Quant.getElement_int(arr, h) > daikon.Quant.getElement_int(arr, h-1);
+    }
+
+
     public static int bsearch(int[] a, int key) {
         final int orig_key = key;
 

@@ -3,33 +3,33 @@ Main:::CLASS
 Main.$assertionsDisabled == false
 ===========================================================================
 Main.before_loop(int, int, int, int[]):::ENTER
-hi == daikon.Quant.size(arr)
-lo == 0
+h == daikon.Quant.size(arr)
+l == 0
 arr != null
 daikon.Quant.eltwiseLTE(arr)
-lo < daikon.Quant.size(arr)-1
-lo != daikon.Quant.getElement_int(arr, lo)
-lo < daikon.Quant.getElement_int(arr, hi-1)
-hi <= daikon.Quant.getElement_int(arr, hi-1)
-key <= daikon.Quant.getElement_int(arr, hi-1)
-daikon.Quant.eltsGTE(arr, daikon.Quant.getElement_int(arr, lo))
-daikon.Quant.eltsLTE(arr, daikon.Quant.getElement_int(arr, hi-1))
-daikon.Quant.size(arr)-1 >= daikon.Quant.getElement_int(arr, lo)
-daikon.Quant.getElement_int(arr, lo) < daikon.Quant.getElement_int(arr, hi-1)
+l < daikon.Quant.size(arr)-1
+l != daikon.Quant.getElement_int(arr, l)
+l < daikon.Quant.getElement_int(arr, h-1)
+h <= daikon.Quant.getElement_int(arr, h-1)
+k <= daikon.Quant.getElement_int(arr, h-1)
+daikon.Quant.eltsGTE(arr, daikon.Quant.getElement_int(arr, l))
+daikon.Quant.eltsLTE(arr, daikon.Quant.getElement_int(arr, h-1))
+daikon.Quant.size(arr)-1 >= daikon.Quant.getElement_int(arr, l)
+daikon.Quant.getElement_int(arr, l) < daikon.Quant.getElement_int(arr, h-1)
 ===========================================================================
 Main.before_loop(int, int, int, int[]):::EXIT
 Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
 daikon.Quant.pairwiseEqual(arr, \old(arr))
 daikon.Quant.eltwiseLTE(arr)
-daikon.Quant.eltsGTE(arr, daikon.Quant.getElement_int(arr, \old(lo)))
-daikon.Quant.eltsLTE(arr, daikon.Quant.getElement_int(arr, \old(hi)-1))
-\old(lo) < daikon.Quant.size(arr)-1
-\old(lo) != daikon.Quant.getElement_int(arr, \old(lo))
-\old(lo) < daikon.Quant.getElement_int(arr, \old(hi)-1)
-\old(hi) <= daikon.Quant.getElement_int(arr, \old(hi)-1)
-\old(key) <= daikon.Quant.getElement_int(arr, \old(hi)-1)
-daikon.Quant.size(arr)-1 >= daikon.Quant.getElement_int(arr, \old(lo))
-daikon.Quant.getElement_int(arr, \old(lo)) < daikon.Quant.getElement_int(arr, \old(hi)-1)
+daikon.Quant.eltsGTE(arr, daikon.Quant.getElement_int(arr, \old(l)))
+daikon.Quant.eltsLTE(arr, daikon.Quant.getElement_int(arr, \old(h)-1))
+\old(l) < daikon.Quant.size(arr)-1
+\old(l) != daikon.Quant.getElement_int(arr, \old(l))
+\old(l) < daikon.Quant.getElement_int(arr, \old(h)-1)
+\old(h) <= daikon.Quant.getElement_int(arr, \old(h)-1)
+\old(k) <= daikon.Quant.getElement_int(arr, \old(h)-1)
+daikon.Quant.size(arr)-1 >= daikon.Quant.getElement_int(arr, \old(l))
+daikon.Quant.getElement_int(arr, \old(l)) < daikon.Quant.getElement_int(arr, \old(h)-1)
 ===========================================================================
 Main.bsearch(int[], int):::ENTER
 a != null
@@ -177,30 +177,30 @@ daikon.Quant.size(a)-1 != daikon.Quant.getElement_int(a, \old(lo))
 daikon.Quant.getElement_int(a, \old(lo)) <= daikon.Quant.getElement_int(a, \old(mid))
 ===========================================================================
 Main.return_fail_inv(int, int, int, int[]):::ENTER
-lo >= 0
+l >= 0
 daikon.Quant.eltwiseLTE(arr)
-lo - hi - 1 == 0
-lo <= daikon.Quant.size(arr)-1
-lo != daikon.Quant.getElement_int(arr, lo)
-hi < daikon.Quant.size(arr)-1
-hi <= daikon.Quant.getElement_int(arr, lo)
-key != daikon.Quant.size(arr)-1
-key < daikon.Quant.getElement_int(arr, lo)
-daikon.Quant.size(arr) != daikon.Quant.getElement_int(arr, lo)
-daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, lo)
+l - h - 1 == 0
+l <= daikon.Quant.size(arr)-1
+l != daikon.Quant.getElement_int(arr, l)
+h < daikon.Quant.size(arr)-1
+h <= daikon.Quant.getElement_int(arr, l)
+k != daikon.Quant.size(arr)-1
+k < daikon.Quant.getElement_int(arr, l)
+daikon.Quant.size(arr) != daikon.Quant.getElement_int(arr, l)
+daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, l)
 ===========================================================================
 Main.return_fail_inv(int, int, int, int[]):::EXIT
 Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
 daikon.Quant.pairwiseEqual(arr, \old(arr))
 daikon.Quant.eltwiseLTE(arr)
-\old(lo) <= daikon.Quant.size(arr)-1
-\old(lo) != daikon.Quant.getElement_int(arr, \old(lo))
-\old(hi) < daikon.Quant.size(arr)-1
-\old(hi) <= daikon.Quant.getElement_int(arr, \old(lo))
-\old(key) != daikon.Quant.size(arr)-1
-\old(key) < daikon.Quant.getElement_int(arr, \old(lo))
-daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, \old(lo))
-\old(daikon.Quant.size(arr)) != daikon.Quant.getElement_int(arr, \old(lo))
+\old(l) <= daikon.Quant.size(arr)-1
+\old(l) != daikon.Quant.getElement_int(arr, \old(l))
+\old(h) < daikon.Quant.size(arr)-1
+\old(h) <= daikon.Quant.getElement_int(arr, \old(l))
+\old(k) != daikon.Quant.size(arr)-1
+\old(k) < daikon.Quant.getElement_int(arr, \old(l))
+daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, \old(l))
+\old(daikon.Quant.size(arr)) != daikon.Quant.getElement_int(arr, \old(l))
 ===========================================================================
 Main.start_loop_inv(int, int[], int, int, int):::ENTER
 a != null

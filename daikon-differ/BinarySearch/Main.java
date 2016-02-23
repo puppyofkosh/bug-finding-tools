@@ -10,10 +10,15 @@ public class Main {
     private static void dummy_fn2(int l, int h, int k, int[] arr) {
     }
 
+
+    private static void before_loop(int l, int h, int k, int[] arr) {
+    }
+
     public static int bsearch(int[] a, int key) {
         int lo = 0;
         int hi = a.length - 1;
         // should be <=
+        before_loop(lo, hi, key, a);
         while (lo < hi) {
             int mid = lo + (hi - lo) / 2;
 

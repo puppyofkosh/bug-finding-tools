@@ -16,13 +16,17 @@ public class Main {
     private static void dummy_fn_inc_lo(int key, int elem, int l, int m, int h) {
     }
 
-    private static void return_fail_inv(int l, int h, int k, int[] arr) {
+    private static void return_fail_inv(int lo, int hi, int key, int[] arr) {
+    }
+
+    private static void before_loop(int lo, int hi, int key, int[] arr) {
     }
 
     public static int bsearch(int[] a, int key) {
         int lo = 0;
         // should be a.length - 1
         int hi = a.length;
+        before_loop(lo, hi, key, a);
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             // forces daikon to compute invariants about dummy_fn input and output,

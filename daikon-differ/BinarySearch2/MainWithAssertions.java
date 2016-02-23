@@ -88,11 +88,30 @@ public class MainWithAssertions {
         assert daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, l);
     }
 
+    private static void before_loop(int lo, int hi, int key, int[] arr) {
+        assert hi == daikon.Quant.size(arr);
+        assert lo == 0;
+        assert arr != null;
+        assert daikon.Quant.eltwiseLTE(arr);
+        assert lo < daikon.Quant.size(arr)-1;
+        assert lo != daikon.Quant.getElement_int(arr, lo);
+        assert lo < daikon.Quant.getElement_int(arr, hi-1);
+        assert hi <= daikon.Quant.getElement_int(arr, hi-1);
+        assert key <= daikon.Quant.getElement_int(arr, hi-1);
+        assert daikon.Quant.eltsGTE(arr, daikon.Quant.getElement_int(arr, lo));
+        assert daikon.Quant.eltsLTE(arr, daikon.Quant.getElement_int(arr, hi-1));
+        assert daikon.Quant.size(arr)-1 >= daikon.Quant.getElement_int(arr, lo);
+        assert daikon.Quant.getElement_int(arr, lo) < daikon.Quant.getElement_int(arr, hi-1);
+    }
+
+
+
     public static int bsearch(int[] a, int key) {
         final int old_key = key;
         int lo = 0;
         // should be a.length - 1
         int hi = a.length;
+        before_loop(lo, hi, key, a);
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             // forces daikon to compute invariants about dummy_fn input and output,
