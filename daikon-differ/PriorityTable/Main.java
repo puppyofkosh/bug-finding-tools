@@ -11,6 +11,10 @@ public class Main {
     }
 
     private static void initialize_loop_invariant(int i, Node priorityTable[]) {
+        assert i >= 0;
+        assert priorityTable != null;
+        assert daikon.Quant.getElement_Object(priorityTable, i) == null;
+        assert i < daikon.Quant.size(priorityTable)-1;
     }
 
     private static void initialize_return_invariant(Node priorityTable[]) {
@@ -18,10 +22,25 @@ public class Main {
 
     private static void insert_return_invariant(int prio, int val,
                                                 Node n, Node priorityTable[]) {
+        assert val == n.data;
+        assert n != null;
+        assert n.next != null;
+        assert n.next.data >= -1;
+        assert n.next.next != null;
+        assert priorityTable != null;
+        assert daikon.Quant.getElement_Object(priorityTable, prio) != null;
+        assert prio != n.next.data;
+        assert prio < daikon.Quant.size(priorityTable)-1;
+        assert val > n.next.data;
+        assert n.next.data != daikon.Quant.size(priorityTable)-1;
     }
 
     private static void insert_enter_invariant(int prio, int val,
                                                Node priorityTable[]) {
+        assert priorityTable != null;
+        assert daikon.Quant.getElement_Object(priorityTable, prio) != null;
+        assert prio < daikon.Quant.size(priorityTable)-1;
+        assert val != priorityTable.getClass().getName().length();
     }
 
     private static class PriorityTable {

@@ -1,13 +1,49 @@
 public class Main {
 
-    public static void start_inv(String s, String p) {}
-    public static void not_star_inv(String s, String p) {}
-    public static void not_star_ret_false_inv(String s, String p) {}
-    public static void not_star_recur_inv(String s, String p) {}
+    public static void start_inv(String s, String p) {
+        assert s != null;
+        assert p != null;
+        assert s.toString().length() >= 0;
+        assert p.toString().length() >= 0;
+    }
 
-    public static void is_star_loop_inv(String s, String p, int i, int len) {}
-    public static void ret_true_inv(String s, String p, int i, int len) {}
-    public static void loop_exit_inv(String s, String p, int i, int len) {}
+    public static void not_star_inv(String s, String p) {
+        assert s != null;
+        assert p != null;
+        assert s.toString().length() >= 1;
+        assert p.toString().length() >= 1;
+    }
+
+    public static void not_star_ret_false_inv(String s, String p) {
+        assert !s.toString().equals(p.toString());
+        assert s.toString().length() >= p.toString().length();
+    }
+    public static void not_star_recur_inv(String s, String p) {
+        assert s != null;
+        assert p != null;
+        assert s.toString().length() >= 1;
+        assert p.toString().length() >= 1;
+    }
+
+    public static void is_star_loop_inv(String s, String p, int i, int len) {
+        assert len == s.toString().length();
+        assert s != null;
+        assert p != null;
+        assert i >= -1;
+        assert !s.toString().equals(p.toString());
+        assert i < len;
+    }
+    public static void ret_true_inv(String s, String p, int i, int len) {
+        assert len == s.toString().length();
+        assert i >= -1;
+        assert !s.toString().equals(p.toString());
+        assert i < len;
+        assert i - len + p.toString().length() - 1 == 0;
+    }
+
+    public static void loop_exit_inv(String s, String p, int i, int len) {
+        // No invariants generated
+    }
 
     public static boolean isMatch(String s, String p) {
         start_inv(s,p);

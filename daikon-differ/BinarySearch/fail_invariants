@@ -4,22 +4,22 @@ Main.$assertionsDisabled == false
 ===========================================================================
 Main.bsearch(int[], int):::ENTER
 a != null
-a[] sorted by <=
+daikon.Quant.eltwiseLTE(a)
 ===========================================================================
-Main.bsearch(int[], int):::EXIT33
-orig(key) == a[return]
-orig(key) == orig(a[post(return)])
+Main.bsearch(int[], int):::EXIT35
+\old(key) == daikon.Quant.getElement_int(a, \result)
+\old(key) == \old(daikon.Quant.getElement_int(a, \new(\result)))
 ===========================================================================
-Main.bsearch(int[], int):::EXIT43
-return == -1
-orig(key) != size(a[])-1
+Main.bsearch(int[], int):::EXIT46
+\result == -1
+\old(key) != daikon.Quant.size(a)-1
 ===========================================================================
 Main.bsearch(int[], int):::EXIT
-Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
-a[] == orig(a[])
-(return == -1)  ==>  (orig(key) != size(a[])-1)
-a[] sorted by <=
-return < size(a[])-1
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
+daikon.Quant.pairwiseEqual(a, \old(a))
+(\old(key) != daikon.Quant.size(a)-1) || !(\result == -1)
+daikon.Quant.eltwiseLTE(a)
+\result < daikon.Quant.size(a)-1
 ===========================================================================
 Main.dummy_fn(int, int, int, int, int):::ENTER
 l >= 0
@@ -29,29 +29,29 @@ l < h
 m < h
 ===========================================================================
 Main.dummy_fn(int, int, int, int, int):::EXIT
-Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
 ===========================================================================
 Main.dummy_fn2(int, int, int, int[]):::ENTER
 l >= 0
-arr[] sorted by <=
+daikon.Quant.eltwiseLTE(arr)
 l >= h
-l <= size(arr[])-1
-l != arr[l]
-h <= size(arr[])-1
-h != arr[l]
-k != size(arr[])-1
-size(arr[])-1 != arr[l]
+l <= daikon.Quant.size(arr)-1
+l != daikon.Quant.getElement_int(arr, l)
+h <= daikon.Quant.size(arr)-1
+h != daikon.Quant.getElement_int(arr, l)
+k != daikon.Quant.size(arr)-1
+daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, l)
 ===========================================================================
 Main.dummy_fn2(int, int, int, int[]):::EXIT
-Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
-arr[] == orig(arr[])
-arr[] sorted by <=
-orig(l) <= size(arr[])-1
-orig(l) != arr[orig(l)]
-orig(h) <= size(arr[])-1
-orig(h) != arr[orig(l)]
-orig(k) != size(arr[])-1
-size(arr[])-1 != arr[orig(l)]
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
+daikon.Quant.pairwiseEqual(arr, \old(arr))
+daikon.Quant.eltwiseLTE(arr)
+\old(l) <= daikon.Quant.size(arr)-1
+\old(l) != daikon.Quant.getElement_int(arr, \old(l))
+\old(h) <= daikon.Quant.size(arr)-1
+\old(h) != daikon.Quant.getElement_int(arr, \old(l))
+\old(k) != daikon.Quant.size(arr)-1
+daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, \old(l))
 ===========================================================================
 Main.dummy_fn_inc_lo(int, int, int, int, int):::ENTER
 key > elem
@@ -61,11 +61,11 @@ l <= h
 m < h
 ===========================================================================
 Main.dummy_fn_inc_lo(int, int, int, int, int):::EXIT
-Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
 ===========================================================================
 Main.dummy_fn_reduce_hi(int, int, int, int, int):::ENTER
-elem one of { 1, 2, 950 }
-l one of { 0, 3 }
+elem == 1 || elem == 2 || elem == 950
+l == 0 || l == 3
 key < elem
 elem > l
 elem >= h
@@ -73,31 +73,34 @@ l <= m
 m - h - 1 == 0
 ===========================================================================
 Main.dummy_fn_reduce_hi(int, int, int, int, int):::EXIT
-Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
 ===========================================================================
 Main.failingTests():::ENTER
 ===========================================================================
 Main.failingTests():::EXIT
-Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
 ===========================================================================
 Main.main(java.lang.String[]):::ENTER
-args has only one value
-args.getClass().getName() == java.lang.String[].class
-args[] contains no nulls and has only one value, of length 1
-args[] elements has only one value
-args[].toString == [both]
-args[].toString elements == "both"
-size(args[]) == 1
+args != null
+args.getClass().getName() == java.lang.String[].class.getName()
+("oneOf.java.jpp: SEQUENCE unimplemented" != null)
+daikon.Quant.eltsNotEqual(args, null)
+daikon.Quant.pairwiseEqual(daikon.Quant.collectObject(args, "toString()"), new String[] { "both" })
+daikon.Quant.eltsEqual(daikon.Quant.collectObject(args, "toString()"), "both")
+args.getClass().getName().length() == 18
+daikon.Quant.size(args) == 1
 ===========================================================================
 Main.main(java.lang.String[]):::EXIT
-Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
-args[] == orig(args[])
-args[] contains no nulls and has only one value, of length 1
-args[] elements has only one value
-args[].toString == [both]
-args[].toString elements == "both"
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)
+daikon.Quant.pairwiseEqual(args, \old(args))
+args.getClass().getName().length() == \old(args.getClass().getName()).length()
+("oneOf.java.jpp: SEQUENCE unimplemented" != null)
+daikon.Quant.eltsNotEqual(args, null)
+daikon.Quant.pairwiseEqual(daikon.Quant.collectObject(args, "toString()"), new String[] { "both" })
+daikon.Quant.eltsEqual(daikon.Quant.collectObject(args, "toString()"), "both")
+args.getClass().getName().length() == 18
 ===========================================================================
 Main.passingTests():::ENTER
 ===========================================================================
 Main.passingTests():::EXIT
-Main.$assertionsDisabled == orig(Main.$assertionsDisabled)
+Main.$assertionsDisabled == \old(Main.$assertionsDisabled)

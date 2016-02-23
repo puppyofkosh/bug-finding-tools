@@ -3,23 +3,93 @@ import daikon.Quant;
 public class Main {
 
     private static void start_loop_inv(int key, int a[], int lo, int mid, int hi) {
+        assert         a != null;
+        assert daikon.Quant.eltwiseLTE(a);
+        assert lo >= 0;
+        assert mid >= 0;
+        assert lo <= mid;
+        assert lo <= hi;
+        assert lo <= daikon.Quant.size(a)-1;
+        assert mid <= hi;
+        assert mid <= daikon.Quant.size(a)-1;
+        assert hi <= daikon.Quant.size(a);
+        assert hi != daikon.Quant.size(a)-1;
+        assert daikon.Quant.getElement_int(a, lo) <= daikon.Quant.getElement_int(a, mid);
     }
     private static void end_loop_inv(int key, int a[], int lo, int mid, int hi) {
-    }
-    private static void reduce_hi_loop_inv(int key, int a[], int lo, int mid, int hi) {
-    }
-    private static void inc_lo_loop_inv(int key, int a[], int lo, int mid, int hi) {
+        assert a != null;
+        assert daikon.Quant.eltwiseLTE(a);
+        assert lo >= 0;
+        assert mid >= 0;
+        assert hi >= -1;
+        assert key != daikon.Quant.size(a)-1;
+        assert key != daikon.Quant.getElement_int(a, mid);
+        assert lo <= daikon.Quant.size(a)-1;
+        assert mid <= daikon.Quant.size(a)-1;
+        assert hi <= daikon.Quant.size(a);
+        assert hi != daikon.Quant.size(a)-1;
+        assert daikon.Quant.size(a)-1 != daikon.Quant.getElement_int(a, lo);
     }
 
-    private static void dummy_fn_reduce_hi(int key, int elem, int l, int m, int h) {
+    private static void reduce_hi_loop_inv(int key, int a[], int lo, int mid, int hi) {
+        assert         a != null;
+        assert daikon.Quant.eltwiseLTE(a);
+        assert lo >= 0;
+        assert mid >= 0;
+        assert hi >= -1;
+        assert key != daikon.Quant.size(a)-1;
+        assert key < daikon.Quant.getElement_int(a, mid);
+        assert lo <= mid;
+        assert lo < daikon.Quant.size(a)-1;
+        assert lo != daikon.Quant.getElement_int(a, lo);
+        assert lo != daikon.Quant.getElement_int(a, mid);
+        assert mid - hi - 1 == 0;
+        assert mid <= daikon.Quant.size(a)-1;
+        assert hi < daikon.Quant.size(a)-1;
+        assert hi <= daikon.Quant.getElement_int(a, mid);
+        assert daikon.Quant.size(a) != daikon.Quant.getElement_int(a, lo);
+        assert daikon.Quant.size(a)-1 != daikon.Quant.getElement_int(a, lo);
+        assert daikon.Quant.getElement_int(a, lo) <= daikon.Quant.getElement_int(a, mid);
     }
-    private static void dummy_fn_inc_lo(int key, int elem, int l, int m, int h) {
+
+
+    private static void inc_lo_loop_inv(int key, int a[], int lo, int mid, int hi) {
+        assert daikon.Quant.getElement_int(a, lo-1) == daikon.Quant.getElement_int(a, mid);
+        assert a != null;
+        assert daikon.Quant.eltwiseLTE(a);
+        assert lo >= 1;
+        assert mid >= 0;
+        assert hi >= 1;
+        assert key != daikon.Quant.size(a)-1;
+        assert key > daikon.Quant.getElement_int(a, mid);
+        assert lo - mid - 1 == 0;
+        assert lo <= daikon.Quant.size(a)-1;
+        assert mid <= hi;
+        assert mid < daikon.Quant.size(a)-1;
+        assert mid <= daikon.Quant.getElement_int(a, lo);
+        assert hi <= daikon.Quant.size(a);
+        assert hi != daikon.Quant.size(a)-1;
+        assert daikon.Quant.size(a)-1 != daikon.Quant.getElement_int(a, lo);
+        assert daikon.Quant.size(a)-1 != daikon.Quant.getElement_int(a, hi-1);
+        assert daikon.Quant.getElement_int(a, lo) > daikon.Quant.getElement_int(a, mid);
     }
 
     private static void return_fail_inv(int l, int h, int k, int[] arr) {
+        assert         l >= 0;
+        assert daikon.Quant.eltwiseLTE(arr);
+        assert l - h - 1 == 0;
+        assert l <= daikon.Quant.size(arr)-1;
+        assert l != daikon.Quant.getElement_int(arr, l);
+        assert h < daikon.Quant.size(arr)-1;
+        assert h <= daikon.Quant.getElement_int(arr, l);
+        assert k != daikon.Quant.size(arr)-1;
+        assert k < daikon.Quant.getElement_int(arr, l);
+        assert daikon.Quant.size(arr) != daikon.Quant.getElement_int(arr, l);
+        assert daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, l);
     }
 
     public static int bsearch(int[] a, int key) {
+        final int old_key = key;
         int lo = 0;
         // should be a.length - 1
         int hi = a.length;
@@ -39,14 +109,17 @@ public class Main {
                 lo = mid + 1;
                 inc_lo_loop_inv(key, a, lo, mid, hi);
             }
-            else
+            else {
+                assert key == a[mid];
                 return mid;
+            }
 
             end_loop_inv(key, a, lo, mid, hi);
         }
 
         return_fail_inv(lo, hi, key, a);
 
+        assert old_key != daikon.Quant.size(a)-1;
         return -1;
     }
 
