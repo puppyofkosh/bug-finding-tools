@@ -6,11 +6,11 @@ Main.bsearch(int[], int):::ENTER
 a != null
 daikon.Quant.eltwiseLTE(a)
 ===========================================================================
-Main.bsearch(int[], int):::EXIT35
+Main.bsearch(int[], int):::EXIT33
 \old(key) == daikon.Quant.getElement_int(a, \result)
 \old(key) == \old(daikon.Quant.getElement_int(a, \new(\result)))
 ===========================================================================
-Main.bsearch(int[], int):::EXIT46
+Main.bsearch(int[], int):::EXIT43
 \result == -1
 \old(key) != daikon.Quant.size(a)-1
 ===========================================================================

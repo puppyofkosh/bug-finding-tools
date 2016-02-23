@@ -1,7 +1,7 @@
 #! /bin/bash
 
 cd $1
-javac -g *.java
+javac -g Main.java
 if [ $? -ne 0 ]; then
     exit 1
 fi

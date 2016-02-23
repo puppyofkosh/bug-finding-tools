@@ -1,16 +1,52 @@
-public class Main {
+import daikon.Quant;
+
+public class MainWithAssertions {
 
     private static void dummy_fn(int key, int elem, int l, int m, int h) {
+        assert l >= 0;
+        assert m >= 0;
+        assert l <= m;
+        assert l < h;
+        assert m < h;
     }
     private static void dummy_fn_reduce_hi(int key, int elem, int l, int m, int h) {
+        // Bad constraints, but we keep em here for now
+        assert elem == 1 || elem == 2 || elem == 950;
+        assert l == 0 || l == 3;
+        //
+        assert key < elem;
+        assert elem > l;
+        assert elem >= h;
+        assert l <= m;
+        assert m - h - 1 == 0;
     }
     private static void dummy_fn_inc_lo(int key, int elem, int l, int m, int h) {
+        assert key > elem;
+        assert key != l;
+        assert l - m - 1 == 0;
+        assert l <= h;
+        assert m < h;
     }
 
     private static void dummy_fn2(int l, int h, int k, int[] arr) {
+        assert l >= h;
+        assert l <= daikon.Quant.size(arr)-1;
+        assert l != daikon.Quant.getElement_int(arr, l);
+        assert h <= daikon.Quant.size(arr)-1;
+        assert h != daikon.Quant.getElement_int(arr, l);
+        assert k != daikon.Quant.size(arr)-1;
+        // This is the invariant that fails the failing case
+        assert k != daikon.Quant.getElement_int(arr, l);
+        //
+        assert daikon.Quant.size(arr)-1 != daikon.Quant.getElement_int(arr, l);
     }
 
     public static int bsearch(int[] a, int key) {
+        final int orig_key = key;
+
+        assert a != null;
+        assert daikon.Quant.eltwiseLTE(a);
+
         int lo = 0;
         int hi = a.length - 1;
         // should be <=
@@ -29,8 +65,9 @@ public class Main {
                 lo = mid + 1;
                 dummy_fn_inc_lo(key, a[mid], lo, mid, hi);
             }
-            else
+            else {
                 return mid;
+            }
 
         }
 

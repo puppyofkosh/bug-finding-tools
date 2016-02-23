@@ -11,111 +11,134 @@ Main$Node.Main$Node(int):::ENTER
 d >= -1
 ===========================================================================
 Main$Node.Main$Node(int):::EXIT
-this.data == orig(d)
+this.data == \old(d)
 ===========================================================================
 Main$PriorityTable:::CLASS
 ===========================================================================
 Main$PriorityTable:::OBJECT
-Main$PriorityTable.MAXPRIO == size(this.priorityTable[])-1
+Main$PriorityTable.MAXPRIO == daikon.Quant.size(this.priorityTable)-1
+this.priorityTable.getClass().getName().length() == daikon.Quant.size(this.priorityTable)
 this.priorityTable != null
-this.priorityTable.getClass().getName() == Main$Node[].class
-this.priorityTable[].getClass().getName() == [Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, Main.Node, null]
-size(this.priorityTable[]) == 11
-this.priorityTable[Main$PriorityTable.MAXPRIO] == null
-this.priorityTable[Main$PriorityTable.MAXPRIO-1] != null
+this.priorityTable.getClass().getName() == Main$Node[].class.getName()
+daikon.Quant.pairwiseEqual(daikon.Quant.typeArray(this.priorityTable), new String[] { "Main.Node", "Main.Node", "Main.Node", "Main.Node", "Main.Node", "Main.Node", "Main.Node", "Main.Node", "Main.Node", "Main.Node", null })
+this.priorityTable.getClass().getName().length() == 11
+daikon.Quant.getElement_Object(this.priorityTable, Main$PriorityTable.MAXPRIO) == null
+daikon.Quant.getElement_Object(this.priorityTable, Main$PriorityTable.MAXPRIO-1) != null
 ===========================================================================
 Main$PriorityTable.Main$PriorityTable():::EXIT
 ===========================================================================
 Main$PriorityTable.insert(int, int):::ENTER
-this.priorityTable[prio] != null
+daikon.Quant.getElement_Object(this.priorityTable, prio) != null
 Main$PriorityTable.MAXPRIO > prio
-val != size(this.priorityTable[])
+val != this.priorityTable.getClass().getName().length()
 ===========================================================================
 Main$PriorityTable.insert(int, int):::EXIT
-this.priorityTable == orig(this.priorityTable)
-this.priorityTable[] == orig(this.priorityTable[])
-this.priorityTable[orig(prio)] != null
-this.priorityTable.getClass().getName() == orig(this.priorityTable.getClass().getName())
-orig(val) != size(this.priorityTable[])
+this.priorityTable == \old(this.priorityTable)
+daikon.Quant.pairwiseEqual(this.priorityTable, \old(this.priorityTable))
+this.priorityTable.getClass().getName().length() == \old(this.priorityTable.getClass().getName()).length()
+this.priorityTable.getClass().getName().length() == \old(daikon.Quant.size(this.priorityTable))
+daikon.Quant.getElement_Object(this.priorityTable, \old(prio)) != null
+this.priorityTable.getClass().getName() == \old(this.priorityTable.getClass().getName())
+\old(val) != this.priorityTable.getClass().getName().length()
 ===========================================================================
 Main.initialize_loop_invariant(int, Main$Node[]):::ENTER
+priorityTable.getClass().getName().length() == daikon.Quant.size(priorityTable)
 i >= 0
 priorityTable != null
-priorityTable.getClass().getName() == Main$Node[].class
-size(priorityTable[]) == 11
-priorityTable[i] == null
-i < size(priorityTable[])-1
+priorityTable.getClass().getName() == Main$Node[].class.getName()
+priorityTable.getClass().getName().length() == 11
+daikon.Quant.getElement_Object(priorityTable, i) == null
+i < daikon.Quant.size(priorityTable)-1
 ===========================================================================
 Main.initialize_loop_invariant(int, Main$Node[]):::EXIT
-priorityTable[] == orig(priorityTable[])
-priorityTable[orig(i)] == null
-orig(i) < size(priorityTable[])-1
+daikon.Quant.pairwiseEqual(priorityTable, \old(priorityTable))
+priorityTable.getClass().getName().length() == \old(priorityTable.getClass().getName()).length()
+priorityTable.getClass().getName().length() == \old(daikon.Quant.size(priorityTable))
+priorityTable.getClass().getName().length() == 11
+daikon.Quant.getElement_Object(priorityTable, \old(i)) == null
+\old(i) < daikon.Quant.size(priorityTable)-1
 ===========================================================================
 Main.initialize_return_invariant(Main$Node[]):::ENTER
-priorityTable.getClass().getName() == Main$Node[].class
-size(priorityTable[]) == 11
+priorityTable.getClass().getName().length() == daikon.Quant.size(priorityTable)
+priorityTable.getClass().getName() == Main$Node[].class.getName()
+priorityTable.getClass().getName().length() == 11
 ===========================================================================
 Main.initialize_return_invariant(Main$Node[]):::EXIT
-priorityTable[] == orig(priorityTable[])
+daikon.Quant.pairwiseEqual(priorityTable, \old(priorityTable))
+priorityTable.getClass().getName().length() == \old(priorityTable.getClass().getName()).length()
+priorityTable.getClass().getName().length() == \old(daikon.Quant.size(priorityTable))
+priorityTable.getClass().getName().length() == 11
 ===========================================================================
 Main.insert_enter_invariant(int, int, Main$Node[]):::ENTER
+priorityTable.getClass().getName().length() == daikon.Quant.size(priorityTable)
 priorityTable != null
-priorityTable.getClass().getName() == Main$Node[].class
-size(priorityTable[]) == 11
-prio <= size(priorityTable[])-1
-val != size(priorityTable[])
+priorityTable.getClass().getName() == Main$Node[].class.getName()
+priorityTable.getClass().getName().length() == 11
+prio <= daikon.Quant.size(priorityTable)-1
+val != priorityTable.getClass().getName().length()
 ===========================================================================
 Main.insert_enter_invariant(int, int, Main$Node[]):::EXIT
-priorityTable[] == orig(priorityTable[])
-orig(prio) <= size(priorityTable[])-1
+daikon.Quant.pairwiseEqual(priorityTable, \old(priorityTable))
+priorityTable.getClass().getName().length() == \old(priorityTable.getClass().getName()).length()
+priorityTable.getClass().getName().length() == \old(daikon.Quant.size(priorityTable))
+priorityTable.getClass().getName().length() == 11
+\old(prio) <= daikon.Quant.size(priorityTable)-1
+\old(val) != priorityTable.getClass().getName().length()
 ===========================================================================
 Main.insert_return_invariant(int, int, Main$Node, Main$Node[]):::ENTER
 val == n.data
+priorityTable.getClass().getName().length() == daikon.Quant.size(priorityTable)
 n != null
 n.next != null
 n.next.data >= -1
 n.next.next != null
 priorityTable != null
-priorityTable.getClass().getName() == Main$Node[].class
-size(priorityTable[]) == 11
-priorityTable[prio] != null
+priorityTable.getClass().getName() == Main$Node[].class.getName()
+priorityTable.getClass().getName().length() == 11
+daikon.Quant.getElement_Object(priorityTable, prio) != null
 prio != n.next.data
-prio < size(priorityTable[])-1
+prio < daikon.Quant.size(priorityTable)-1
 val > n.next.data
-val != size(priorityTable[])
-n.next.data != size(priorityTable[])
-n.next.data != size(priorityTable[])-1
+val != priorityTable.getClass().getName().length()
+n.next.data != priorityTable.getClass().getName().length()
+n.next.data != daikon.Quant.size(priorityTable)-1
 ===========================================================================
 Main.insert_return_invariant(int, int, Main$Node, Main$Node[]):::EXIT
-n.data == orig(val)
-n.data == orig(n.data)
-n.next == orig(n.next)
-n.next.data == orig(n.next.data)
-n.next.next == orig(n.next.next)
-priorityTable[] == orig(priorityTable[])
+n.data == \old(val)
+n.data == \old(n.data)
+n.next == \old(n.next)
+n.next.data == \old(n.next.data)
+n.next.next == \old(n.next.next)
+daikon.Quant.pairwiseEqual(priorityTable, \old(priorityTable))
+priorityTable.getClass().getName().length() == \old(priorityTable.getClass().getName()).length()
+priorityTable.getClass().getName().length() == \old(daikon.Quant.size(priorityTable))
 n.next != null
 n.next.data >= -1
 n.next.next != null
-priorityTable[orig(prio)] != null
+priorityTable.getClass().getName().length() == 11
+daikon.Quant.getElement_Object(priorityTable, \old(prio)) != null
 n.data > n.next.data
-n.data != orig(size(priorityTable[]))
-n.next.data != orig(prio)
-n.next.data != size(priorityTable[])-1
-n.next.data != orig(size(priorityTable[]))
-orig(prio) < size(priorityTable[])-1
+n.data != priorityTable.getClass().getName().length()
+n.next.data != \old(prio)
+n.next.data != priorityTable.getClass().getName().length()
+n.next.data != daikon.Quant.size(priorityTable)-1
+\old(prio) < daikon.Quant.size(priorityTable)-1
 ===========================================================================
 Main.main(java.lang.String[]):::ENTER
-args has only one value
-args.getClass().getName() == java.lang.String[].class
-args[] contains no nulls and has only one value, of length 1
-args[] elements has only one value
-args[].toString == [both]
-args[].toString elements == "both"
-size(args[]) == 1
+args != null
+args.getClass().getName() == java.lang.String[].class.getName()
+("oneOf.java.jpp: SEQUENCE unimplemented" != null)
+daikon.Quant.eltsNotEqual(args, null)
+daikon.Quant.pairwiseEqual(daikon.Quant.collectObject(args, "toString()"), new String[] { "both" })
+daikon.Quant.eltsEqual(daikon.Quant.collectObject(args, "toString()"), "both")
+args.getClass().getName().length() == 18
+daikon.Quant.size(args) == 1
 ===========================================================================
 Main.main(java.lang.String[]):::EXIT
-args[] == orig(args[])
-args[] contains no nulls and has only one value, of length 1
-args[] elements has only one value
-args[].toString == [both]
-args[].toString elements == "both"
+daikon.Quant.pairwiseEqual(args, \old(args))
+args.getClass().getName().length() == \old(args.getClass().getName()).length()
+("oneOf.java.jpp: SEQUENCE unimplemented" != null)
+daikon.Quant.eltsNotEqual(args, null)
+daikon.Quant.pairwiseEqual(daikon.Quant.collectObject(args, "toString()"), new String[] { "both" })
+daikon.Quant.eltsEqual(daikon.Quant.collectObject(args, "toString()"), "both")
+args.getClass().getName().length() == 18
