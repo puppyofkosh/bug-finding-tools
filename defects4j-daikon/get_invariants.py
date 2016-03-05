@@ -7,7 +7,10 @@ from subprocess import call
 PASS_ARG = "pass"
 FAIL_ARG = "both"
 
-CLASSES_TO_OMIT = ["^org.junit\.", "^com.sun.proxy\."]
+# Don't generate invaraints about stuff we don't care about
+CLASSES_TO_OMIT = ["^org.junit\.",
+                   "^junit\.",
+                   "^com.sun.proxy\."]
 
 def get_omit_args(to_omit):
     s = ""
@@ -35,7 +38,7 @@ def main():
     classpath = "target/tests:target/classes:$CLASSPATH:/usr/share/java/hamcrest-core.jar"
 
     if nodaikon:
-        command = "java -cp {0} {1} {2}".format(classpath, full_classname, PASS_ARG)
+        command = "java -cp {0} {1} {2}".format(classpath, full_classname, FAIL_ARG)
         call(command, shell=True)
         return
 
