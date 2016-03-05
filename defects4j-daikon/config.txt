@@ -1,0 +1,2 @@
+daikon.inv.binary.sequenceScalar.Member.enabled = true
+daikon.derive.unary.StringLength.enabled = true
