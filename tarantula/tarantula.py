@@ -5,6 +5,8 @@ import sys
 import subprocess
 import shutil
 
+import spectra
+from commandio import get_output
 
 BUGGY_DIR = "buggy-version"
 WORKING_DIR = "working-version"
@@ -23,21 +25,7 @@ GCC_ARGS = ["-std=c99"]
 GCC_INSTRUMENTATION_ARGS = ["-fprofile-arcs", "-ftest-coverage"]
 
 TEST_FILE = os.path.join("testplans.alt", "universe")
-
-
-def get_output(command):
-    proc = subprocess.Popen(command,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            shell=True)
-    stdout, stderr = proc.communicate()
-
-    if len(stderr) > 0:
-        print "{0}".format(command)
-        print stderr
-        raise RuntimeError("Why did it write to stderr?")
-    return stdout
-
+INPUT_DIR = "inputs"
 
 def check_current_directory():
     expected_dirs = ["versions.alt",
@@ -62,11 +50,18 @@ def initialize_directory():
         os.makedirs(BUGGY_DIR)
     if not os.path.exists(WORKING_DIR):
         os.makedirs(WORKING_DIR)
+
+    # Create a symlink to each of the subfolders in test/ in the current dir
+    for d in os.listdir(INPUT_DIR):
+        target_name = os.path.join(INPUT_DIR, d)
+        link_name = os.path.basename(os.path.normpath(d))
+        os.symlink(target_name, link_name)
+
     return None
 
 
 def run_gcc(args, infile, outfile):
-    extra_args = [infile, "-o {0}".format(outfile)]
+    extra_args = [infile, "-o", outfile]
     retcode = subprocess.call(["gcc"] + args + extra_args,
                               stdout=subprocess.PIPE,
                               stderr=subprocess.PIPE)
@@ -95,9 +90,40 @@ def compile_versions(filename, working_src_dir, buggy_src_dir):
         print "Error compiling buggy version"
         return False
 
+    os.chdir("..")
     # They both been compiled now.
 
     return None
+
+
+def get_tests(testfile):
+    test_lines = []
+    with open(testfile, 'r') as fd:
+        test_lines += fd.readlines()
+
+    test_lines = [l.strip() for l in test_lines]
+    return test_lines
+
+
+def get_spectra(buggy_program, correct_program, testfile):
+    test_lines = get_tests(testfile)
+
+    passcount = 0
+    run_to_result = {}
+    for i, test in enumerate(test_lines):
+        prog_output = get_output(buggy_program + " " + test)
+        expected_output = get_output(correct_program + " " + test)
+
+        passed = prog_output == expected_output
+        if not passed:
+            print "Failed following test({0}): {1}".format(i, test)
+        else:
+            passcount += 1
+
+        run_to_result[i] = passed
+
+    print "Passed {0}/{1}".format(passcount, len(test_lines))
+    return run_to_result
 
 
 def main():
@@ -123,27 +149,14 @@ def main():
                      WORKING_SOURCE_DIR,
                      BUGGY_SOURCE_DIR)
 
+    run_to_result = get_spectra(os.path.join(BUGGY_DIR, BUGGY_RUNNABLE),
+                                os.path.join(WORKING_DIR, WORKING_RUNNABLE),
+                                TEST_FILE)
+
+    print "{0}".format({k: v for k, v in
+                        run_to_result.iteritems() if v == False})
+
     return
-
-    test_file = TEST_FILE
-
-    lines = []
-    with open(test_file, 'r') as fd:
-        lines += fd.readlines()
-
-    lines = [l.strip() for l in lines]
-
-    passcount = 0
-    for i, test in enumerate(lines):
-        prog_output = get_output(program + " " + test)
-        expected_output = get_output(correct_program + " " + test)
-
-        if prog_output != expected_output:
-            print "Failed following test({0}): {1}".format(i, test)
-        else:
-            passcount += 1
-
-    print "Passed {0}/{1}".format(passcount, len(lines))
 
 if __name__ == "__main__":
     main()
