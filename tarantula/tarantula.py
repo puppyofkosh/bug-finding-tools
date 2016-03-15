@@ -4,8 +4,10 @@ import os
 import sys
 import subprocess
 import shutil
+import pickle
 
 import spectra
+import gcov_helper
 from commandio import get_output
 
 BUGGY_DIR = "buggy-version"
@@ -26,6 +28,8 @@ GCC_INSTRUMENTATION_ARGS = ["-fprofile-arcs", "-ftest-coverage"]
 
 TEST_FILE = os.path.join("testplans.alt", "universe")
 INPUT_DIR = "inputs"
+
+RUN_RESULT_FILE = "runs.pickle"
 
 def check_current_directory():
     expected_dirs = ["versions.alt",
@@ -55,7 +59,9 @@ def initialize_directory():
     for d in os.listdir(INPUT_DIR):
         target_name = os.path.join(INPUT_DIR, d)
         link_name = os.path.basename(os.path.normpath(d))
-        os.symlink(target_name, link_name)
+
+        if not os.path.exists(link_name):
+            os.symlink(target_name, link_name)
 
     return None
 
@@ -68,7 +74,7 @@ def run_gcc(args, infile, outfile):
     return retcode
 
 
-def compile_versions(filename, working_src_dir, buggy_src_dir):
+def compile_working_version(working_src_dir, filename):
     shutil.copy(os.path.join(working_src_dir, filename),
                 os.path.join(WORKING_DIR, filename))
     os.chdir(WORKING_DIR)
@@ -79,21 +85,18 @@ def compile_versions(filename, working_src_dir, buggy_src_dir):
         return False
 
     os.chdir("..")
+    return True
+    
 
+def compile_buggy_version(filename):
     # Compile the incorrect one, this time with coverage
-    shutil.copy(os.path.join(buggy_src_dir, filename),
-                os.path.join(BUGGY_DIR, filename))
-    os.chdir(BUGGY_DIR)
     retcode = run_gcc(GCC_ARGS + GCC_INSTRUMENTATION_ARGS,
                       filename, BUGGY_RUNNABLE)
     if retcode != 0:
         print "Error compiling buggy version"
         return False
 
-    os.chdir("..")
-    # They both been compiled now.
-
-    return None
+    return True
 
 
 def get_tests(testfile):
@@ -105,11 +108,12 @@ def get_tests(testfile):
     return test_lines
 
 
-def get_spectra(buggy_program, correct_program, testfile):
+def get_spectra(src_filename, buggy_program, correct_program, testfile):
     test_lines = get_tests(testfile)
 
     passcount = 0
     run_to_result = {}
+    test_lines = test_lines[:15]
     for i, test in enumerate(test_lines):
         prog_output = get_output(buggy_program + " " + test)
         expected_output = get_output(correct_program + " " + test)
@@ -120,10 +124,47 @@ def get_spectra(buggy_program, correct_program, testfile):
         else:
             passcount += 1
 
-        run_to_result[i] = passed
+        trace = gcov_helper.get_trace(src_filename)
+        gcov_helper.reset_gcov_counts(src_filename)
+
+        spectrum = spectra.make_spectrum_from_trace(trace)
+
+        run_to_result[i] = (passed, spectrum)
 
     print "Passed {0}/{1}".format(passcount, len(test_lines))
     return run_to_result
+
+
+def get_traces(projectdir, project_name):
+    original_dir = os.getcwd()
+
+    os.chdir(projectdir)
+    err = initialize_directory()
+    if err is not None:
+        print err
+        return
+
+    filename = PROJECT_TO_FILENAME[project_name]
+
+    # Copy the buggy source into our current dir. We need to be in the same dir
+    # as we compiled to run gcov, and if we try to keep the buggy version in
+    # its own directory, we'll have to call chdir() over and over
+    compile_working_version(WORKING_SOURCE_DIR, filename)
+
+    buggy_src_file = "buggy-" + filename
+    shutil.copy(os.path.join(BUGGY_SOURCE_DIR, filename), buggy_src_file)
+    compile_buggy_version(buggy_src_file)
+
+    run_to_result = get_spectra(buggy_src_file,
+                                os.path.join(".", BUGGY_RUNNABLE),
+                                os.path.join(WORKING_DIR, WORKING_RUNNABLE),
+                                TEST_FILE)
+
+    # Write the information about the runs to the file
+    # This consists of 1) did the case pass, and 2) which lines executed
+    os.chdir(original_dir)
+    with open(RUN_RESULT_FILE, "w") as fd:
+        pickle.dump(run_to_result, fd)
 
 
 def main():
@@ -139,22 +180,13 @@ def main():
         print "Unkown project {0}".format(project_name)
         return
 
-    os.chdir(projectdir)
-    err = initialize_directory()
-    if err is not None:
-        print err
-        return
-
-    compile_versions(PROJECT_TO_FILENAME[project_name],
-                     WORKING_SOURCE_DIR,
-                     BUGGY_SOURCE_DIR)
-
-    run_to_result = get_spectra(os.path.join(BUGGY_DIR, BUGGY_RUNNABLE),
-                                os.path.join(WORKING_DIR, WORKING_RUNNABLE),
-                                TEST_FILE)
-
-    print "{0}".format({k: v for k, v in
-                        run_to_result.iteritems() if v == False})
+    if "make-spectra" in sys.argv:
+        get_traces(projectdir, project_name)
+    elif "analyze-spectra" in sys.argv:
+        run_to_result = {}
+        with open(RUN_RESULT_FILE, "r") as fd:
+            run_to_result = pickle.load(fd)
+        print run_to_result[0]
 
     return
 
