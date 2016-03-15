@@ -5,6 +5,7 @@ import sys
 import subprocess
 import shutil
 import pickle
+import pandas as pd
 
 import spectra
 import gcov_helper
@@ -166,6 +167,45 @@ def get_traces(projectdir, project_name):
         pickle.dump(run_to_result, fd)
 
 
+def analyze_runs():
+    run_to_result = {}
+    with open(RUN_RESULT_FILE, "r") as fd:
+        run_to_result = pickle.load(fd)
+    
+    # Count how many times each line was executed in a failing or
+    # successful test
+    failing_counts = pd.Series()
+    passing_counts = pd.Series()
+    
+    total_passed = 0
+    total_failed = 0
+
+    for passing, spectrum in run_to_result.values():
+        ser = pd.Series(spectrum)
+        assert not ser.isnull().values.any()
+        if passing:
+            total_passed += 1
+            passing_counts = passing_counts.add(ser, fill_value=0)
+        else:
+            total_failed += 1
+            failing_counts = failing_counts.add(ser, fill_value=0)
+
+    assert total_failed > 0 and total_passed > 0
+    assert not passing_counts.isnull().values.any()
+    assert not failing_counts.isnull().values.any()
+
+    print passing_counts[75]
+
+    # Now we get the suspiciousness of each line
+    failing_counts /= float(total_failed)
+    passing_counts /= float(total_passed)
+
+    denom = failing_counts.add(passing_counts, fill_value=0)
+    print denom[75]
+    suspiciousness = failing_counts.mul(1.0 / denom, fill_value=0)
+    suspiciousness.sort_values(inplace=True)
+    return suspiciousness
+
 def main():
     if len(sys.argv) < 2:
         print "usage: {0} program-directory project".format(sys.argv[0])
@@ -182,10 +222,11 @@ def main():
     if "make-spectra" in sys.argv:
         get_traces(projectdir, project_name)
     elif "analyze-spectra" in sys.argv:
-        run_to_result = {}
-        with open(RUN_RESULT_FILE, "r") as fd:
-            run_to_result = pickle.load(fd)
-        print run_to_result[0]
+        suspiciousness = analyze_runs()
+        print suspiciousness
+        print suspiciousness[107]
+
+        
 
     return
 
