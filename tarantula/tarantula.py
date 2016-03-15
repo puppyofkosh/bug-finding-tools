@@ -113,7 +113,6 @@ def get_spectra(src_filename, buggy_program, correct_program, testfile):
 
     passcount = 0
     run_to_result = {}
-    test_lines = test_lines[:15]
     for i, test in enumerate(test_lines):
         prog_output = get_output(buggy_program + " " + test)
         expected_output = get_output(correct_program + " " + test)
