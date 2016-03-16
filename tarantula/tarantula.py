@@ -70,24 +70,29 @@ def run_gcc(args, infile, outfile):
     return retcode
 
 
-def compile_working_version(working_src_dir, filename):
-    shutil.copy(os.path.join(working_src_dir, filename),
-                os.path.join(WORKING_DIR, filename))
+def compile_working_version(working_src_dir, main_src_file, src_files):
+    for f in src_files:
+        shutil.copy(os.path.join(working_src_dir, f),
+                    os.path.join(WORKING_DIR, f))
     os.chdir(WORKING_DIR)
-    retcode = run_gcc(GCC_ARGS, filename, WORKING_RUNNABLE)
+    retcode = run_gcc(GCC_ARGS, main_src_file, WORKING_RUNNABLE)
 
     if retcode != 0:
-        print "Error compiling working version"
-        return False
+        os.chdir("..")
+        raise RuntimeError("Could not compile working version")
 
     os.chdir("..")
     return True
     
 
-def compile_buggy_version(filename):
+def compile_buggy_version(buggy_src_dir, main_src_file, src_files):
     # Compile the incorrect one, this time with coverage
+    for f in src_files:
+        shutil.copy(os.path.join(buggy_src_dir, f),
+                    f)
+
     retcode = run_gcc(GCC_ARGS + GCC_INSTRUMENTATION_ARGS,
-                      filename, BUGGY_RUNNABLE)
+                      main_src_file, BUGGY_RUNNABLE)
     if retcode != 0:
         print "Error compiling buggy version"
         return False
@@ -143,14 +148,13 @@ def get_traces(projectdir, project):
     # Copy the buggy source into our current dir. We need to be in the same dir
     # as we compiled to run gcov, and if we try to keep the buggy version in
     # its own directory, we'll have to call chdir() over and over
-    compile_working_version(project.working_src_dir, project.src_filename)
+    compile_working_version(project.working_src_dir, project.main_src_file,
+                            project.src_files)
 
-    buggy_src_file = "buggy-" + project.src_filename
-    shutil.copy(os.path.join(project.buggy_src_dir, project.src_filename),
-                buggy_src_file)
-    compile_buggy_version(buggy_src_file)
+    compile_buggy_version(project.buggy_src_dir, project.main_src_file,
+                          project.src_files)
 
-    run_to_result = get_spectra(buggy_src_file,
+    run_to_result = get_spectra(project.main_src_file,
                                 os.path.join(".", BUGGY_RUNNABLE),
                                 os.path.join(WORKING_DIR, WORKING_RUNNABLE),
                                 project.test_file)
@@ -213,6 +217,7 @@ def main():
         return
 
     if "make-spectra" in sys.argv:
+        print projectdir
         get_traces(projectdir, project)
     elif "analyze-spectra" in sys.argv:
         suspiciousness = analyze_runs()
