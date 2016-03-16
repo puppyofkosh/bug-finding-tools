@@ -116,8 +116,11 @@ def get_spectra(src_filename, buggy_program, correct_program, testfile):
     run_to_result = {}
     test_lines = test_lines[:15]
     for i, test in enumerate(test_lines):
-        prog_output = get_output(buggy_program + " " + test)
-        expected_output = get_output(correct_program + " " + test)
+        if i % 100 == 0:
+            print "Running test {0}".format(i)
+
+        prog_output = get_output(buggy_program + " " + test, True)
+        expected_output = get_output(correct_program + " " +  test, True)
 
         passed = prog_output == expected_output
         if not passed:
@@ -223,6 +226,12 @@ def main():
         suspiciousness = analyze_runs()
         print suspiciousness
 
+        if 111 in suspiciousness:
+            print suspiciousness[111]
+
+        if 105 in suspiciousness:
+            print suspiciousness[105]
+            
 
 if __name__ == "__main__":
     main()

@@ -7,8 +7,7 @@ import spectra
 from commandio import get_output
 
 def _run_gcov(filename):
-    retcode = subprocess.call(["gcov", filename])
-    return retcode == 0
+    _ = get_output(["gcov", filename])
 
 def reset_gcov_counts(filepath):
     filename, extension = os.path.splitext(filepath)
