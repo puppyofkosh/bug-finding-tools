@@ -11,11 +11,10 @@ import spectra
 import gcov_helper
 from commandio import get_output
 
+from projects import get_project
+
 BUGGY_DIR = "buggy-version"
 WORKING_DIR = "working-version"
-
-WORKING_SOURCE_DIR = os.path.join("source.alt", "source.orig")
-BUGGY_SOURCE_DIR = os.path.join("versions.alt", "versions.orig", "v1")
 
 WORKING_RUNNABLE = "working.out"
 BUGGY_RUNNABLE = "buggy.out"
@@ -27,14 +26,10 @@ PROJECT_TO_FILENAME = {
 GCC_ARGS = ["-std=c99"]
 GCC_INSTRUMENTATION_ARGS = ["-fprofile-arcs", "-ftest-coverage"]
 
-TEST_FILE = os.path.join("testplans.alt", "universe")
-INPUT_DIR = "inputs"
-
 RUN_RESULT_FILE = "runs.pickle"
 
 def check_current_directory():
     expected_dirs = ["versions.alt",
-                     "versions",
                      "source.alt",
                      os.path.join("source.alt", "source.orig"),
                      "testplans.alt"]
@@ -45,7 +40,7 @@ def check_current_directory():
     return None
 
 
-def initialize_directory():
+def initialize_directory(project):
     # Make sure correct dirs are there
     err = check_current_directory()
     if err is not None:
@@ -57,8 +52,8 @@ def initialize_directory():
         os.makedirs(WORKING_DIR)
 
     # Create a symlink to each of the subfolders in test/ in the current dir
-    for d in os.listdir(INPUT_DIR):
-        target_name = os.path.join(INPUT_DIR, d)
+    for d in os.listdir(project.input_dir):
+        target_name = os.path.join(project.input_dir, d)
         link_name = os.path.basename(os.path.normpath(d))
 
         if not os.path.exists(link_name):
@@ -114,6 +109,7 @@ def get_spectra(src_filename, buggy_program, correct_program, testfile):
 
     passcount = 0
     run_to_result = {}
+    test_lines = test_lines[:15]
     for i, test in enumerate(test_lines):
         prog_output = get_output(buggy_program + " " + test)
         expected_output = get_output(correct_program + " " + test)
@@ -135,30 +131,29 @@ def get_spectra(src_filename, buggy_program, correct_program, testfile):
     return run_to_result
 
 
-def get_traces(projectdir, project_name):
+def get_traces(projectdir, project):
     original_dir = os.getcwd()
 
     os.chdir(projectdir)
-    err = initialize_directory()
+    err = initialize_directory(project)
     if err is not None:
         print err
         return
 
-    filename = PROJECT_TO_FILENAME[project_name]
-
     # Copy the buggy source into our current dir. We need to be in the same dir
     # as we compiled to run gcov, and if we try to keep the buggy version in
     # its own directory, we'll have to call chdir() over and over
-    compile_working_version(WORKING_SOURCE_DIR, filename)
+    compile_working_version(project.working_src_dir, project.src_filename)
 
-    buggy_src_file = "buggy-" + filename
-    shutil.copy(os.path.join(BUGGY_SOURCE_DIR, filename), buggy_src_file)
+    buggy_src_file = "buggy-" + project.src_filename
+    shutil.copy(os.path.join(project.buggy_src_dir, project.src_filename),
+                buggy_src_file)
     compile_buggy_version(buggy_src_file)
 
     run_to_result = get_spectra(buggy_src_file,
                                 os.path.join(".", BUGGY_RUNNABLE),
                                 os.path.join(WORKING_DIR, WORKING_RUNNABLE),
-                                TEST_FILE)
+                                project.test_file)
 
     # Write the information about the runs to the file
     # This consists of 1) did the case pass, and 2) which lines executed
@@ -194,14 +189,11 @@ def analyze_runs():
     assert not passing_counts.isnull().values.any()
     assert not failing_counts.isnull().values.any()
 
-    print passing_counts[75]
-
     # Now we get the suspiciousness of each line
     failing_counts /= float(total_failed)
     passing_counts /= float(total_passed)
 
     denom = failing_counts.add(passing_counts, fill_value=0)
-    print denom[75]
     suspiciousness = failing_counts.mul(1.0 / denom, fill_value=0)
     suspiciousness.sort_values(inplace=True)
     return suspiciousness
@@ -215,20 +207,17 @@ def main():
     projectdir = sys.argv[1]
     project_name = sys.argv[2]
 
-    if project_name not in PROJECT_TO_FILENAME:
+    project = get_project(project_name)
+    if project is None:
         print "Unkown project {0}".format(project_name)
         return
 
     if "make-spectra" in sys.argv:
-        get_traces(projectdir, project_name)
+        get_traces(projectdir, project)
     elif "analyze-spectra" in sys.argv:
         suspiciousness = analyze_runs()
         print suspiciousness
-        print suspiciousness[107]
 
-        
-
-    return
 
 if __name__ == "__main__":
     main()
