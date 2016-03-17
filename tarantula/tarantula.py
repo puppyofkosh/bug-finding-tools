@@ -110,11 +110,10 @@ def get_tests(testfile):
 
 
 def get_spectra(src_filename, buggy_program, correct_program, testfile):
-    test_lines = get_tests(testfile)
+    test_lines = get_tests(testfile)[:15]
 
     passcount = 0
     run_to_result = {}
-    test_lines = test_lines[:15]
     for i, test in enumerate(test_lines):
         if i % 100 == 0:
             print "Running test {0}".format(i)
@@ -206,15 +205,16 @@ def analyze_runs():
     return suspiciousness
 
 def main():
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         print "usage: {0} program-directory project".format(sys.argv[0])
         print "Valid projects are: {0}".format(PROJECT_TO_FILENAME.keys())
         return
 
     projectdir = sys.argv[1]
     project_name = sys.argv[2]
+    version = sys.argv[3]
 
-    project = get_project(project_name)
+    project = get_project(project_name, version)
     if project is None:
         print "Unkown project {0}".format(project_name)
         return
@@ -231,7 +231,11 @@ def main():
 
         if 105 in suspiciousness:
             print suspiciousness[105]
+
+        if 135 in suspiciousness:
+            print suspiciousness[135]
             
+
 
 if __name__ == "__main__":
     main()

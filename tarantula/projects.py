@@ -1,6 +1,9 @@
 import os
 
 class Project(object):
+    def set_bug_version(self, version):
+        self.buggy_src_dir = os.path.join(self.buggy_src_dir, version)
+
     def __init__(self, name,
                  test_file, input_dir,
                  working_src_dir,
@@ -21,7 +24,7 @@ PROJECT_TO_FILENAME = {
                        "inputs",
                        os.path.join("source.alt", "source.orig"),
                        os.path.join("versions.alt",
-                                    "versions.orig", "v1"),
+                                    "versions.orig"),
                        ["replace.c"],
                        "replace.c"),
 
@@ -30,10 +33,12 @@ PROJECT_TO_FILENAME = {
                          "inputs",
                          os.path.join("source.alt", "source.orig"),
                          os.path.join("versions.alt",
-                                      "versions.orig", "v1"),
+                                      "versions.orig"),
                          ["schedule2.c", "schedule2.h"],
                          "schedule2.c"),
 }
 
-def get_project(projectname):
-    return PROJECT_TO_FILENAME.get(projectname, None)
+def get_project(projectname, version):
+    project = PROJECT_TO_FILENAME.get(projectname, None)
+    project.set_bug_version(version)
+    return project
