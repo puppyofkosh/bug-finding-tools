@@ -28,13 +28,8 @@ GCC_INSTRUMENTATION_ARGS = ["-fprofile-arcs", "-ftest-coverage"]
 
 RUN_RESULT_FILE = "runs.pickle"
 
-def check_current_directory():
-    expected_dirs = ["versions.alt",
-                     "source.alt",
-                     os.path.join("source.alt", "source.orig"),
-                     "testplans.alt"]
-
-    for e in expected_dirs:
+def check_current_directory(project):
+    for e in project.get_all_files():
         if not os.path.exists(e):
             return "{0} doesn't exist".format(e)
     return None
@@ -42,7 +37,7 @@ def check_current_directory():
 
 def initialize_directory(project):
     # Make sure correct dirs are there
-    err = check_current_directory()
+    err = check_current_directory(project)
     if err is not None:
         return err
 
@@ -211,7 +206,7 @@ def main():
         results.sort_values('rank', inplace=True)
         print results
         
-        interesting_keys = [292]
+        interesting_keys = [9, 10, 11]
         line, score = spectra.get_score(ranks, interesting_keys)
         print "line {0}: score {1}".format(line, score)
         for k in interesting_keys:

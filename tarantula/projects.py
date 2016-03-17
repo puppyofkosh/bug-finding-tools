@@ -4,6 +4,15 @@ class Project(object):
     def set_bug_version(self, version):
         self.buggy_src_dir = os.path.join(self.buggy_src_dir, version)
 
+    def get_all_files(self):
+        files = [self.test_file, self.input_dir,
+                self.working_src_dir, self.buggy_src_dir]
+
+        for s in list(self.src_files) + [self.main_src_file]:
+            files.append(os.path.join(self.working_src_dir, s))
+            files.append(os.path.join(self.buggy_src_dir, s))
+        return files
+
     def __init__(self, name,
                  test_file, input_dir,
                  working_src_dir,
@@ -19,6 +28,12 @@ class Project(object):
         self.main_src_file = main_src_file
 
 PROJECT_TO_FILENAME = {
+    "paper-example-mid": Project("paper-example-mid",
+                                 "test.txt",
+                                 "inputs",
+                                 "working", "buggy",
+                                 ["mid.c"],
+                                 "mid.c"),
     "replace": Project("replace",
                        os.path.join("testplans.alt", "universe"),
                        "inputs",
