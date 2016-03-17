@@ -110,7 +110,7 @@ def get_tests(testfile):
 
 
 def get_spectra(src_filename, buggy_program, correct_program, testfile):
-    test_lines = get_tests(testfile)[:15]
+    test_lines = get_tests(testfile)
 
     passcount = 0
     run_to_result = {}
@@ -172,37 +172,20 @@ def analyze_runs():
     run_to_result = {}
     with open(RUN_RESULT_FILE, "r") as fd:
         run_to_result = pickle.load(fd)
-    
-    # Count how many times each line was executed in a failing or
-    # successful test
-    failing_counts = pd.Series()
-    passing_counts = pd.Series()
-    
-    total_passed = 0
-    total_failed = 0
 
+    passing_spectra = []
+    failing_spectra = []
     for passing, spectrum in run_to_result.values():
-        ser = pd.Series(spectrum)
-        assert not ser.isnull().values.any()
         if passing:
-            total_passed += 1
-            passing_counts = passing_counts.add(ser, fill_value=0)
+            passing_spectra.append(spectrum)
         else:
-            total_failed += 1
-            failing_counts = failing_counts.add(ser, fill_value=0)
+            failing_spectra.append(spectrum)
 
-    assert total_failed > 0 and total_passed > 0
-    assert not passing_counts.isnull().values.any()
-    assert not failing_counts.isnull().values.any()
+    suspiciousness = spectra.compute_suspiciousness(passing_spectra,
+                                                    failing_spectra)
+    ranks = spectra.get_statement_ranks(suspiciousness)
 
-    # Now we get the suspiciousness of each line
-    failing_counts /= float(total_failed)
-    passing_counts /= float(total_passed)
-
-    denom = failing_counts.add(passing_counts, fill_value=0)
-    suspiciousness = failing_counts.mul(1.0 / denom, fill_value=0)
-    suspiciousness.sort_values(inplace=True)
-    return suspiciousness
+    return ranks, suspiciousness
 
 def main():
     if len(sys.argv) < 3:
@@ -223,19 +206,16 @@ def main():
         print projectdir
         get_traces(projectdir, project)
     elif "analyze-spectra" in sys.argv:
-        suspiciousness = analyze_runs()
-        print suspiciousness
-
-        if 111 in suspiciousness:
-            print suspiciousness[111]
-
-        if 105 in suspiciousness:
-            print suspiciousness[105]
-
-        if 135 in suspiciousness:
-            print suspiciousness[135]
-            
-
+        ranks, suspiciousness = analyze_runs()
+        results = pd.DataFrame(data={'rank': ranks, 'susp': suspiciousness})
+        results.sort_values('rank', inplace=True)
+        print results
+        
+        interesting_keys = [292]
+        line, score = spectra.get_score(ranks, interesting_keys)
+        print "line {0}: score {1}".format(line, score)
+        for k in interesting_keys:
+            print "line {0}: susp {1}".format(k, suspiciousness.get(k, None))
 
 if __name__ == "__main__":
     main()
