@@ -53,6 +53,37 @@ PROJECT_TO_FILENAME = {
                          "schedule2.c"),
 }
 
+PROJECT_TO_BUGGY_LINES = {
+    "paper-example-mid": {
+        "v1": {10}
+    },
+
+    # If the bug is missing code, then we say the lines with the bugs are either
+    # the line before or the line after, as long as they're in the same basic block
+    # (guaranteed to execute iff the correct version without missing code is also
+    # guaranteed to execute)
+    "schedule2": {
+        "v1": {134, 135, 136},
+        "v2": {294, 295, 296},
+        "v3": {291, 292, 293},
+        "v4": {92, 93},
+        "v5": {111},
+        "v6": {77},
+        "v7": {292},
+        "v8": {277,278},
+        "v9": {187},
+        "v10": {28, 29}
+    }
+}
+
+def get_known_buggy_lines(project_name, version):
+    if project_name in PROJECT_TO_BUGGY_LINES:
+        known_buggy_lines = PROJECT_TO_BUGGY_LINES[project_name]
+        if version in known_buggy_lines:
+            return known_buggy_lines[version]
+    return None
+
+
 def get_project(projectname, version):
     project = PROJECT_TO_FILENAME.get(projectname, None)
     project.set_bug_version(version)

@@ -11,7 +11,7 @@ import spectra
 import gcov_helper
 from commandio import get_output
 
-from projects import get_project
+import projects
 
 BUGGY_DIR = "buggy-version"
 WORKING_DIR = "working-version"
@@ -192,7 +192,7 @@ def main():
     project_name = sys.argv[2]
     version = sys.argv[3]
 
-    project = get_project(project_name, version)
+    project = projects.get_project(project_name, version)
     if project is None:
         print "Unkown project {0}".format(project_name)
         return
@@ -205,8 +205,13 @@ def main():
         results = pd.DataFrame(data={'rank': ranks, 'susp': suspiciousness})
         results.sort_values('rank', inplace=True)
         print results
+
+        interesting_keys = projects.get_known_buggy_lines(project_name,
+                                                          version)
+        if interesting_keys is None:
+            interesting_keys = [134, 135, 136]
         
-        interesting_keys = [9, 10, 11]
+        
         line, score = spectra.get_score(ranks, interesting_keys)
         print "line {0}: score {1}".format(line, score)
         for k in interesting_keys:
