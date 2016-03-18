@@ -1,173 +1,81 @@
-#! /bin/python
+# This file contains the actual implementation of tarantula
 
-import os
-import sys
-import subprocess
-import shutil
-import pickle
 import pandas as pd
 
-import spectra
-import gcov_helper
-from commandio import get_output
 
-import projects
-
-BUGGY_DIR = "buggy-version"
-WORKING_DIR = "working-version"
-
-WORKING_RUNNABLE = "working.out"
-BUGGY_RUNNABLE = "buggy.out"
-
-PROJECT_TO_FILENAME = {
-    "replace": "replace.c"
-}
-
-GCC_ARGS = ["-std=c99"]
-GCC_INSTRUMENTATION_ARGS = ["-fprofile-arcs", "-ftest-coverage"]
-
-RUN_RESULT_FILE = "runs.pickle"
-
-def check_current_directory(project):
-    for e in project.get_all_files():
-        if not os.path.exists(e):
-            return "{0} doesn't exist".format(e)
-    return None
+def _sum_spectra(spectr):
+    total = pd.Series()
+    for spectrum in spectr:
+        ser = pd.Series(spectrum)
+        total = total.add(ser, fill_value=0)
+    return total
 
 
-def initialize_directory(project):
-    # Make sure correct dirs are there
-    err = check_current_directory(project)
-    if err is not None:
-        return err
+def _compute_suspiciousness(passing_spectra, failing_spectra):
+    failing_counts = _sum_spectra(failing_spectra)
+    passing_counts = _sum_spectra(passing_spectra)
 
-    if not os.path.exists(BUGGY_DIR):
-        os.makedirs(BUGGY_DIR)
-    if not os.path.exists(WORKING_DIR):
-        os.makedirs(WORKING_DIR)
+    total_failed = len(failing_spectra)    
+    total_passed = len(passing_spectra)
 
-    # Create a symlink to each of the subfolders in test/ in the current dir
-    for d in os.listdir(project.input_dir):
-        target_name = os.path.join(project.input_dir, d)
-        link_name = os.path.basename(os.path.normpath(d))
+    assert total_failed > 0 and total_passed > 0
+    assert not passing_counts.isnull().values.any()
+    assert not failing_counts.isnull().values.any()
 
-        if not os.path.exists(link_name):
-            os.symlink(target_name, link_name)
+    # Now we get the suspiciousness of each line
+    failing_counts /= float(total_failed)
+    passing_counts /= float(total_passed)
 
-    return None
-
-
-def run_gcc(args, infile, outfile):
-    extra_args = [infile, "-o", outfile]
-    retcode = subprocess.call(["gcc"] + args + extra_args,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE)
-    return retcode
+    denom = failing_counts.add(passing_counts, fill_value=0)
+    suspiciousness = failing_counts.mul(1.0 / denom, fill_value=0)
+    suspiciousness.sort_values(inplace=True, ascending=False)
+    return suspiciousness
 
 
-def compile_working_version(working_src_dir, main_src_file, src_files):
-    for f in src_files:
-        shutil.copy(os.path.join(working_src_dir, f),
-                    os.path.join(WORKING_DIR, f))
-    os.chdir(WORKING_DIR)
-    retcode = run_gcc(GCC_ARGS, main_src_file, WORKING_RUNNABLE)
+def _get_statement_ranks(suspiciousness):
+    assert len(suspiciousness) > 0
+    assert suspiciousness.max() < 1.0 and suspiciousness.min() >= 0
+    suspiciousness.sort_values(inplace=True, ascending=False)
 
-    if retcode != 0:
-        os.chdir("..")
-        raise RuntimeError("Could not compile working version")
+    #
+    # We rank statements by how many statements we'd have to look
+    # at until we got to this one (starting from 1), going from
+    # high to low suspiciousness.
+    # If two statements have the same suspiciousness, then we give all the
+    # statements the rank, assuming we look at it last. In other words,
+    # all of the statements with the same suspiciousness get the same rank.
+    # Example: Suspiciousnesses are: 0.8 0.5 0.5 0.3
+    # Ranks are:                      1   3   3   4
+    # We assume we'd look at the 0.5 statements last, so they each get rank 3.
+    #
+    line_to_rank = {}
+    cur_rank = 1
+    cur_susp = suspiciousness[suspiciousness.index[0]]
+    lines_with_cur_rank = set()
+    for line, susp in suspiciousness.iteritems():
+        if cur_susp != susp:
+            assert len(lines_with_cur_rank) > 0
+            for l in lines_with_cur_rank:
+                line_to_rank[l] = cur_rank
 
-    os.chdir("..")
-    return True
-    
+            cur_rank += 1
+            cur_susp = susp
+            lines_with_cur_rank.clear()
 
-def compile_buggy_version(buggy_src_dir, main_src_file, src_files):
-    # Compile the incorrect one, this time with coverage
-    for f in src_files:
-        shutil.copy(os.path.join(buggy_src_dir, f),
-                    f)
+        # No matter what, add this line
+        lines_with_cur_rank.add(line)
 
-    retcode = run_gcc(GCC_ARGS + GCC_INSTRUMENTATION_ARGS,
-                      main_src_file, BUGGY_RUNNABLE)
-    if retcode != 0:
-        print "Error compiling buggy version"
-        return False
+    # Add lines with the last rank that didn't get added in the loop
+    for l in lines_with_cur_rank:
+        line_to_rank[l] = cur_rank
 
-    return True
-
-
-def get_tests(testfile):
-    test_lines = []
-    with open(testfile, 'r') as fd:
-        test_lines += fd.readlines()
-
-    test_lines = [l.strip() for l in test_lines]
-    return test_lines
-
-
-def get_spectra(src_filename, buggy_program, correct_program, testfile):
-    test_lines = get_tests(testfile)
-
-    passcount = 0
-    run_to_result = {}
-    for i, test in enumerate(test_lines):
-        if i % 100 == 0:
-            print "Running test {0}".format(i)
-
-        prog_output = get_output(buggy_program + " " + test, True)
-        expected_output = get_output(correct_program + " " +  test, True)
-
-        passed = prog_output == expected_output
-        if not passed:
-            print "Failed following test({0}): {1}".format(i, test)
-        else:
-            passcount += 1
-
-        trace = gcov_helper.get_trace(src_filename)
-        gcov_helper.reset_gcov_counts(src_filename)
-
-        spectrum = spectra.make_spectrum_from_trace(trace)
-
-        run_to_result[i] = (passed, spectrum)
-
-    print "Passed {0}/{1}".format(passcount, len(test_lines))
-    return run_to_result
+    assert len(line_to_rank) == len(suspiciousness)
+    line_to_rank_ser = pd.Series(line_to_rank)
+    line_to_rank_ser.sort_values(inplace=True)
+    return line_to_rank_ser
 
 
-def get_traces(projectdir, project):
-    original_dir = os.getcwd()
-
-    os.chdir(projectdir)
-    err = initialize_directory(project)
-    if err is not None:
-        print err
-        return
-
-    # Copy the buggy source into our current dir. We need to be in the same dir
-    # as we compiled to run gcov, and if we try to keep the buggy version in
-    # its own directory, we'll have to call chdir() over and over
-    compile_working_version(project.working_src_dir, project.main_src_file,
-                            project.src_files)
-
-    compile_buggy_version(project.buggy_src_dir, project.main_src_file,
-                          project.src_files)
-
-    run_to_result = get_spectra(project.main_src_file,
-                                os.path.join(".", BUGGY_RUNNABLE),
-                                os.path.join(WORKING_DIR, WORKING_RUNNABLE),
-                                project.test_file)
-
-    # Write the information about the runs to the file
-    # This consists of 1) did the case pass, and 2) which lines executed
-    os.chdir(original_dir)
-    with open(RUN_RESULT_FILE, "w") as fd:
-        pickle.dump(run_to_result, fd)
-
-
-def analyze_runs():
-    run_to_result = {}
-    with open(RUN_RESULT_FILE, "r") as fd:
-        run_to_result = pickle.load(fd)
-
+def get_suspicious_lines(run_to_result):
     passing_spectra = []
     failing_spectra = []
     for passing, spectrum in run_to_result.values():
@@ -176,46 +84,10 @@ def analyze_runs():
         else:
             failing_spectra.append(spectrum)
 
-    suspiciousness = spectra.compute_suspiciousness(passing_spectra,
-                                                    failing_spectra)
-    ranks = spectra.get_statement_ranks(suspiciousness)
+    assert len(passing_spectra) > 0
+    assert len(failing_spectra) > 0
+    suspiciousness = _compute_suspiciousness(passing_spectra,
+                                             failing_spectra)
+    ranks = _get_statement_ranks(suspiciousness)
 
     return ranks, suspiciousness
-
-def main():
-    if len(sys.argv) < 3:
-        print "usage: {0} program-directory project".format(sys.argv[0])
-        print "Valid projects are: {0}".format(PROJECT_TO_FILENAME.keys())
-        return
-
-    projectdir = sys.argv[1]
-    project_name = sys.argv[2]
-    version = sys.argv[3]
-
-    project = projects.get_project(project_name, version)
-    if project is None:
-        print "Unkown project {0}".format(project_name)
-        return
-
-    if "make-spectra" in sys.argv:
-        print projectdir
-        get_traces(projectdir, project)
-    elif "analyze-spectra" in sys.argv:
-        ranks, suspiciousness = analyze_runs()
-        results = pd.DataFrame(data={'rank': ranks, 'susp': suspiciousness})
-        results.sort_values('rank', inplace=True)
-        print results
-
-        interesting_keys = projects.get_known_buggy_lines(project_name,
-                                                          version)
-        if interesting_keys is None:
-            interesting_keys = [134, 135, 136]
-        
-        
-        line, score = spectra.get_score(ranks, interesting_keys)
-        print "line {0}: score {1}".format(line, score)
-        for k in interesting_keys:
-            print "line {0}: susp {1}".format(k, suspiciousness.get(k, None))
-
-if __name__ == "__main__":
-    main()

@@ -1,12 +1,15 @@
 import os
 
+
 class Project(object):
+
     def set_bug_version(self, version):
+        self.version = version
         self.buggy_src_dir = os.path.join(self.buggy_src_dir, version)
 
     def get_all_files(self):
         files = [self.test_file, self.input_dir,
-                self.working_src_dir, self.buggy_src_dir]
+                 self.working_src_dir, self.buggy_src_dir]
 
         for s in list(self.src_files) + [self.main_src_file]:
             files.append(os.path.join(self.working_src_dir, s))
@@ -19,6 +22,7 @@ class Project(object):
                  buggy_src_dir,
                  src_files,
                  main_src_file):
+        self.version = None
         self.name = name
         self.test_file = test_file
         self.input_dir = input_dir
@@ -70,11 +74,12 @@ PROJECT_TO_BUGGY_LINES = {
         "v5": {111},
         "v6": {77},
         "v7": {292},
-        "v8": {277,278},
+        "v8": {277, 278},
         "v9": {187},
         "v10": {28, 29}
     }
 }
+
 
 def get_known_buggy_lines(project_name, version):
     if project_name in PROJECT_TO_BUGGY_LINES:
@@ -88,3 +93,11 @@ def get_project(projectname, version):
     project = PROJECT_TO_FILENAME.get(projectname, None)
     project.set_bug_version(version)
     return project
+
+
+def get_projects():
+    return PROJECT_TO_FILENAME.keys()
+
+
+def get_version_names(projectname):
+    return PROJECT_TO_BUGGY_LINES[projectname].keys()
