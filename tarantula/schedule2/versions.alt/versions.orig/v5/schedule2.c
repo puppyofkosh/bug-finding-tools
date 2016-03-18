@@ -108,7 +108,8 @@ new_job(prio) /* allocate new pid and process block. Stick at end */
 {
     int pid, status = OK;
     struct process *new_process;
-    if(prio < 1) return(BADPRIO); /* Mustn't allow 0 */
+    if(prio < 1)
+        return(BADPRIO); /* Mustn't allow 0 */ // Change by ian: Put return on separate line from if statement
     pid = next_pid++;
     new_process = (struct process *) malloc(sizeof(struct process));
     if(!new_process) status = MALLOC_ERR;

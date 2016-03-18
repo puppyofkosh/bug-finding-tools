@@ -69,10 +69,13 @@ PROJECT_TO_BUGGY_LINES = {
     # guaranteed to execute)
     "schedule2": {
         "v1": {134, 135, 136},
-        "v2": {294, 295, 296},
-        "v3": {291, 292, 293},
+        # Line 297 is iffy as to whether it should get counted
+        # FIXME: Ask about best way of evaluating how well tarantula does when
+        # there is missing code
+        "v2": {294, 295, 296} | {297},
+        "v3": {291, 292, 293} | {297},
         "v4": {92, 93},
-        "v5": {111},
+        "v5": {111} | {112},
         "v6": {77},
         "v7": {292},
 
