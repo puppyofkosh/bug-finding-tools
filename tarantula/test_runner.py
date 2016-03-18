@@ -52,20 +52,23 @@ def initialize_directory(project):
     return None
 
 
-def run_gcc(args, infile, outfile):
+def run_gcc(args, end_args, infile, outfile):
     extra_args = [infile, "-o", outfile]
-    retcode = subprocess.call(["gcc"] + args + extra_args,
+    retcode = subprocess.call(["gcc"] + args + extra_args + end_args,
                               stdout=subprocess.PIPE,
                               stderr=subprocess.PIPE)
     return retcode
 
 
-def compile_working_version(working_src_dir, main_src_file, src_files):
-    for f in src_files:
-        shutil.copy(os.path.join(working_src_dir, f),
+def compile_working_version(project):
+#def compile_working_version(working_src_dir, main_src_file, src_files):
+    for f in project.src_files:
+        shutil.copy(os.path.join(project.working_src_dir, f),
                     os.path.join(WORKING_DIR, f))
     os.chdir(WORKING_DIR)
-    retcode = run_gcc(GCC_ARGS, main_src_file, WORKING_RUNNABLE)
+    retcode = run_gcc(GCC_ARGS, project.additional_gcc_flags,
+                      project.main_src_file,
+                      WORKING_RUNNABLE)
 
     if retcode != 0:
         os.chdir("..")
@@ -75,14 +78,17 @@ def compile_working_version(working_src_dir, main_src_file, src_files):
     return True
     
 
-def compile_buggy_version(buggy_src_dir, main_src_file, src_files):
+def compile_buggy_version(project):
+#def compile_buggy_version(buggy_src_dir, main_src_file, src_files):
     # Compile the incorrect one, this time with coverage
-    for f in src_files:
-        shutil.copy(os.path.join(buggy_src_dir, f),
+    for f in project.src_files:
+        shutil.copy(os.path.join(project.buggy_src_dir, f),
                     f)
 
     retcode = run_gcc(GCC_ARGS + GCC_INSTRUMENTATION_ARGS,
-                      main_src_file, BUGGY_RUNNABLE)
+                      project.additional_gcc_flags,
+                      project.main_src_file, BUGGY_RUNNABLE)
+
     if retcode != 0:
         print "Error compiling buggy version"
         return False
@@ -140,11 +146,8 @@ def get_test_results(projectdir, project):
     # Copy the buggy source into our current dir. We need to be in the same dir
     # as we compiled to run gcov, and if we try to keep the buggy version in
     # its own directory, we'll have to call chdir() over and over
-    compile_working_version(project.working_src_dir, project.main_src_file,
-                            project.src_files)
-
-    compile_buggy_version(project.buggy_src_dir, project.main_src_file,
-                          project.src_files)
+    compile_working_version(project)
+    compile_buggy_version(project)
 
     run_to_result = get_spectra(project.main_src_file,
                                 os.path.join(".", BUGGY_RUNNABLE),

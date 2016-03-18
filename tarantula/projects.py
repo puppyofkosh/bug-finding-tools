@@ -22,7 +22,8 @@ class Project(object):
                  working_src_dir,
                  buggy_src_dir,
                  src_files,
-                 main_src_file):
+                 main_src_file,
+                 additional_gcc_flags=None):
         self.version = None
         self.name = name
         self.test_file = test_file
@@ -30,7 +31,11 @@ class Project(object):
         self.working_src_dir = working_src_dir
         self.buggy_src_dir = buggy_src_dir
         self.src_files = src_files
+        assert main_src_file in src_files
         self.main_src_file = main_src_file
+        if additional_gcc_flags is None:
+            additional_gcc_flags = []
+        self.additional_gcc_flags = additional_gcc_flags
 
 PROJECT_TO_FILENAME = {
     "paper-example-mid": Project("paper-example-mid",
@@ -43,8 +48,7 @@ PROJECT_TO_FILENAME = {
                        os.path.join("testplans.alt", "universe"),
                        "inputs",
                        os.path.join("source.alt", "source.orig"),
-                       os.path.join("versions.alt",
-                                    "versions.orig"),
+                       os.path.join("versions.alt", "versions.orig"),
                        ["replace.c"],
                        "replace.c"),
 
@@ -52,10 +56,20 @@ PROJECT_TO_FILENAME = {
                          os.path.join("testplans.alt", "universe"),
                          "inputs",
                          os.path.join("source.alt", "source.orig"),
-                         os.path.join("versions.alt",
-                                      "versions.orig"),
+                         os.path.join("versions.alt", "versions.orig"),
                          ["schedule2.c", "schedule2.h"],
                          "schedule2.c"),
+
+    "totinfo": Project("totinfo",
+                       os.path.join("testplans.alt", "universe"),
+                       "inputs",
+                       os.path.join("source.alt", "source.orig"),
+                       os.path.join("versions.alt", "versions.orig"),
+                       ["tot_info.c", "std.h", "gamma.h", "chisq.h"],
+                       "tot_info.c",
+                       # Must link with math library to use sin/cos/log functions
+                       ["-lm"])
+
 }
 
 PROJECT_TO_BUGGY_LINES = {
@@ -86,7 +100,11 @@ PROJECT_TO_BUGGY_LINES = {
         #"v9": {187},
 
         "v10": {28, 29}
-    }
+    },
+
+    "totinfo": {
+        "v1": {342},
+    },
 }
 
 

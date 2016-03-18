@@ -34,7 +34,7 @@ def _compute_suspiciousness(passing_spectra, failing_spectra):
 
 def _get_statement_ranks(suspiciousness):
     assert len(suspiciousness) > 0
-    assert suspiciousness.max() < 1.0 and suspiciousness.min() >= 0
+    assert suspiciousness.max() <= 1.0 and suspiciousness.min() >= 0
     suspiciousness.sort_values(inplace=True, ascending=False)
 
     #
