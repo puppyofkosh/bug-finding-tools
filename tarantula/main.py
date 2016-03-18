@@ -11,8 +11,6 @@ import tarantula
 import evaluator
 
 SPECTRA_DIR = "spectra"
-
-
 def get_spectra_file(project_name, version):
     return os.path.join(SPECTRA_DIR,
                         project_name + "-" + version + ".res")
@@ -66,6 +64,7 @@ def main():
 
         project_dir = args[0]
         for v in projects.get_version_names(project_name):
+            print "Generating spectra for version {0}".format(v)
             project = projects.get_project(project_name, v)
             make_spectra(project, project_dir)
     elif command == "make-spectra":

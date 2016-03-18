@@ -5,18 +5,12 @@
 
 
 import os
-import sys
 import subprocess
 import shutil
-import pickle
-import pandas as pd
-import argparse
 
 import spectra
 import gcov_helper
 from commandio import get_output
-
-import projects
 
 BUGGY_DIR = "buggy-version"
 WORKING_DIR = "working-version"
@@ -113,16 +107,14 @@ def get_spectra(src_filename,
     passcount = 0
     run_to_result = {}
     for i, test in enumerate(test_lines):
-        if i % 100 == 0:
+        if i % 500 == 0:
             print "Running test {0}".format(i)
 
         prog_output = get_output(buggy_program + " " + test, True)
         expected_output = get_output(correct_program + " " +  test, True)
 
         passed = prog_output == expected_output
-        if not passed:
-            print "Failed following test({0}): {1}".format(i, test)
-        else:
+        if passed:
             passcount += 1
 
         trace = gcov_helper.get_trace(src_filename)

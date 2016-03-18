@@ -1,4 +1,5 @@
 import os
+import copy
 
 
 class Project(object):
@@ -74,8 +75,13 @@ PROJECT_TO_BUGGY_LINES = {
         "v5": {111},
         "v6": {77},
         "v7": {292},
-        "v8": {277, 278},
-        "v9": {187},
+
+        # v8 segfaults, so we don't include it
+        #"v8": {277, 278},
+
+        # v9 doesn't fail any tests, so we don't include it
+        #"v9": {187},
+
         "v10": {28, 29}
     }
 }
@@ -91,6 +97,10 @@ def get_known_buggy_lines(project_name, version):
 
 def get_project(projectname, version):
     project = PROJECT_TO_FILENAME.get(projectname, None)
+    
+    # We return a copied object because we don't want to change the fields
+    # (like version and stuff) of the global one
+    project = copy.deepcopy(project)
     project.set_bug_version(version)
     return project
 
