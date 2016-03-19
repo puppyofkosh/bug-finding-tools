@@ -10,7 +10,7 @@ def get_output(args, use_shell=False):
     stdout, stderr = proc.communicate()
 
     if len(stderr) > 0:
-        print "{0}".format(args)
-        print stderr
+        print("{0}".format(args))
+        print(stderr)
         raise RuntimeError("Why did it write to stderr?")
     return stdout

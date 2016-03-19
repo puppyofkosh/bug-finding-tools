@@ -6,7 +6,7 @@ def get_nearest_passing_spectrum(spectrum, run_to_result):
     # TODO: Write this with argmin instead
     best_ind = None
     best_diff = None
-    for test, run_res in run_to_result.iteritems():
+    for test, run_res in run_to_result.items():
         if not run_res.passed:
             continue
 
@@ -23,7 +23,7 @@ def get_nearest_passing_spectrum(spectrum, run_to_result):
 
 def get_failing_test(run_to_result):
     failing = [test
-               for test, run_res in run_to_result.iteritems()
+               for test, run_res in run_to_result.items()
                if not run_res.passed]
     assert len(failing) > 0
     return failing[0]
@@ -31,7 +31,7 @@ def get_failing_test(run_to_result):
 # This is the file that determines which spectra to use, and which not to
 # before we run tarantula.
 def filter_spectra(run_to_result):
-    failing_tests = [t for t, run_res in run_to_result.iteritems()
+    failing_tests = [t for t, run_res in run_to_result.items()
                      if not run_res.passed]
 
     # Keep the failing tests and their "nearest neighbors"
@@ -50,7 +50,7 @@ def get_avg(run_to_result):
     total_difference = 0
     total_compared = 0
     test_to_diff = {}
-    for test, run_res in run_to_result.iteritems():
+    for test, run_res in run_to_result.items():
         if not run_res.passed:
             continue
         
@@ -62,5 +62,5 @@ def get_avg(run_to_result):
 
     
     avg_difference = float(total_difference)/total_compared
-    print "Avg distance is {0}".format(avg_difference)
+    print("Avg distance is {0}".format(avg_difference))
     return run_to_result

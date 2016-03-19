@@ -44,7 +44,7 @@ class TestRunner(object):
         self._correct_outputs = []
         for i, test in enumerate(test_lines):
             if i % 500 == 0:
-                print "Running correct version on test {0}".format(i)
+                print("Running correct version on test {0}".format(i))
 
             expected_output = get_output(working_runnable + " " +  test, True)
             self._correct_outputs.append(expected_output)
@@ -63,7 +63,7 @@ class TestRunner(object):
         run_to_result = {}
         for i, test in enumerate(test_lines):
             if i % 500 == 0:
-                print "Running buggy version test {0}".format(i)
+                print("Running buggy version test {0}".format(i))
 
             prog_output = get_output(buggy_program + " " + test, True)
 
@@ -78,7 +78,7 @@ class TestRunner(object):
 
             run_to_result[i] = RunResult(passed=passed, spectrum=spectrum)
 
-        print "Passed {0}/{1}".format(passcount, len(test_lines))
+        print("Passed {0}/{1}".format(passcount, len(test_lines)))
         return run_to_result
     
 
