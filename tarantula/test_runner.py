@@ -11,6 +11,7 @@ import shutil
 import spectra
 import gcov_helper
 from commandio import get_output
+from run_result import RunResult
 
 BUGGY_DIR = "buggy-version"
 WORKING_DIR = "working-version"
@@ -20,8 +21,6 @@ BUGGY_RUNNABLE = "buggy.out"
 
 GCC_ARGS = ["-std=c99"]
 GCC_INSTRUMENTATION_ARGS = ["-fprofile-arcs", "-ftest-coverage"]
-
-RUN_RESULT_FILE = "runs.pickle"
 
 def check_current_directory(project):
     for e in project.get_all_files():
@@ -61,7 +60,6 @@ def run_gcc(args, end_args, infile, outfile):
 
 
 def compile_working_version(project):
-#def compile_working_version(working_src_dir, main_src_file, src_files):
     for f in project.src_files:
         shutil.copy(os.path.join(project.working_src_dir, f),
                     os.path.join(WORKING_DIR, f))
@@ -79,11 +77,9 @@ def compile_working_version(project):
     
 
 def compile_buggy_version(project):
-#def compile_buggy_version(buggy_src_dir, main_src_file, src_files):
     # Compile the incorrect one, this time with coverage
     for f in project.src_files:
-        shutil.copy(os.path.join(project.buggy_src_dir, f),
-                    f)
+        shutil.copy(os.path.join(project.buggy_src_dir, f), f)
 
     retcode = run_gcc(GCC_ARGS + GCC_INSTRUMENTATION_ARGS,
                       project.additional_gcc_flags,
@@ -128,7 +124,7 @@ def get_spectra(src_filename,
 
         spectrum = spectra.make_spectrum_from_trace(trace)
 
-        run_to_result[i] = (passed, spectrum)
+        run_to_result[i] = RunResult(passed=passed, spectrum=spectrum)
 
     print "Passed {0}/{1}".format(passcount, len(test_lines))
     return run_to_result

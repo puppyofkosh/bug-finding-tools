@@ -9,8 +9,8 @@ def _spectra_difference(a, b):
 
 def get_failing_test(run_to_result):
     failing = [test
-               for test, (passing, _) in run_to_result.iteritems()
-               if not passing]
+               for test, run_res in run_to_result.iteritems()
+               if not run_res.passed]
     assert len(failing) > 0
     return failing[0]
 
@@ -24,12 +24,12 @@ def filter_spectra(run_to_result):
     total_difference = 0
     total_compared = 0
     test_to_diff = {}
-    for test, (passing, spectrum) in run_to_result.iteritems():
-        if not passing:
+    for test, run_res in run_to_result.iteritems():
+        if not run_res.passed:
             continue
         
         total_compared += 1
-        diff = _spectra_difference(failing_spectrum, spectrum)
+        diff = _spectra_difference(failing_spectrum, run_res.spectrum)
         total_difference += diff
 
         test_to_diff[test] = diff

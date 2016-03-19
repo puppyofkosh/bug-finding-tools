@@ -3,13 +3,13 @@
 import os
 import sys
 import pandas as pd
-import pickle
 
 import projects
 import test_runner
 import tarantula
 import evaluator
 import spectra_filter
+import run_result
 
 SPECTRA_DIR = "spectra"
 def get_spectra_file(project_name, version):
@@ -25,14 +25,11 @@ def make_spectra(project, projectdir):
 
     outfile = get_spectra_file(project.name, project.version)
     print "Saving results to {0}".format(outfile)
-    with open(outfile, "w") as fd:
-        pickle.dump(run_to_result, fd)
+    run_result.save(outfile, run_to_result)
 
 
 def get_tarantula_output(project_name, version, use_filter):
-    run_to_result = {}
-    with open(get_spectra_file(project_name, version), "r") as fd:
-        run_to_result = pickle.load(fd)
+    run_to_result = run_result.load(get_spectra_file(project_name, version))
 
     if use_filter:
         run_to_result = spectra_filter.filter_spectra(run_to_result)

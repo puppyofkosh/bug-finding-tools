@@ -78,11 +78,11 @@ def _get_statement_ranks(suspiciousness):
 def get_suspicious_lines(run_to_result):
     passing_spectra = []
     failing_spectra = []
-    for passing, spectrum in run_to_result.values():
-        if passing:
-            passing_spectra.append(spectrum)
+    for run_res in run_to_result.values():
+        if run_res.passed:
+            passing_spectra.append(run_res.spectrum)
         else:
-            failing_spectra.append(spectrum)
+            failing_spectra.append(run_res.spectrum)
 
     assert len(passing_spectra) > 0
     assert len(failing_spectra) > 0
