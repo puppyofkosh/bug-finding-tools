@@ -9,6 +9,7 @@ import projects
 import test_runner
 import tarantula
 import evaluator
+import spectra_filter
 
 SPECTRA_DIR = "spectra"
 def get_spectra_file(project_name, version):
@@ -28,10 +29,13 @@ def make_spectra(project, projectdir):
         pickle.dump(run_to_result, fd)
 
 
-def get_tarantula_output(project_name, version):
+def get_tarantula_output(project_name, version, use_filter):
     run_to_result = {}
     with open(get_spectra_file(project_name, version), "r") as fd:
         run_to_result = pickle.load(fd)
+
+    if use_filter:
+        run_to_result = spectra_filter.filter_spectra(run_to_result)
 
     ranks, suspiciousness = tarantula.get_suspicious_lines(run_to_result)
 
@@ -46,19 +50,20 @@ def get_tarantula_output(project_name, version):
     return (ranks, suspiciousness, line, score)
 
 
-def print_tarantula_result(project_name, version):
+def print_tarantula_result(project_name, version, use_filter):
     (ranks, suspiciousness, line, score) = get_tarantula_output(project_name,
-                                                              version)
+                                                                version,
+                                                                use_filter)
     results = pd.DataFrame(data={'rank': ranks, 'susp': suspiciousness})
     results.sort_values('rank', inplace=True)
     print results
     print "line {0}: score {1}".format(line, score)
 
 
-def get_total_scores(project_name):
+def get_total_scores(project_name, use_filter):
     version_to_score = {}
     for version in projects.get_version_names(project_name):
-        _, __, ___, score = get_tarantula_output(project_name, version)
+        _, __, ___, score = get_tarantula_output(project_name, version, use_filter)
         version_to_score[version] = score
     
     version_to_score = pd.Series(version_to_score)
@@ -99,13 +104,19 @@ def main():
             return
         make_spectra(project, project_dir)
     elif command == "find-bugs":
-        if len(args) < 1:
-            print "Usage: find-bugs version"
+        if len(args) < 2:
+            print "Usage: find-bugs version filter|nofilter"
             return
         version = args[0]
-        print_tarantula_result(project_name, version)
+        use_filter = args[1] == "filter"
+
+        print_tarantula_result(project_name, version, use_filter)
     elif command == "evaluate-all":
-        get_total_scores(project_name)
+        if len(args) < 1:
+            print "Usage evaluate-all filter|nofilter"
+            return
+        use_filter = args[0] == "filter"
+        get_total_scores(project_name, use_filter)
     else:
         print "invalid command"
         return

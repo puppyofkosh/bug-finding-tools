@@ -159,6 +159,4 @@ def get_test_results(projectdir, project):
     os.chdir(original_dir)
 
     return run_to_result
-    #with open(RUN_RESULT_FILE, "w") as fd:
-    #pickle.dump(run_to_result, fd)
 
