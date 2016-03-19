@@ -18,15 +18,19 @@ def _compute_suspiciousness(passing_spectra, failing_spectra):
     total_passed = len(passing_spectra)
 
     assert total_failed > 0 and total_passed > 0
-    assert not passing_counts.isnull().values.any()
-    assert not failing_counts.isnull().values.any()
 
     # Now we get the suspiciousness of each line
     failing_counts /= float(total_failed)
     passing_counts /= float(total_passed)
 
+    assert not passing_counts.isnull().values.any()
+    assert not failing_counts.isnull().values.any()
+
     denom = failing_counts.add(passing_counts, fill_value=0)
     suspiciousness = failing_counts.mul(1.0 / denom, fill_value=0)
+    # In case we just divided by 0 (a line is executable, but never executed)
+    # give it suspiciousness of 0
+    suspiciousness.fillna(0, inplace=True)
     suspiciousness.sort_values(inplace=True, ascending=False)
     return suspiciousness
 
