@@ -1,9 +1,6 @@
 import pandas as pd
 
 def _spectra_difference(a, b):
-    a = pd.Series(a)
-    b = pd.Series(b)
-
     diff = a.add(-1 * b, fill_value=0)
     return diff.abs().sum()
 

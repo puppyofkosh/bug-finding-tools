@@ -6,8 +6,7 @@ import pandas as pd
 def _sum_spectra(spectr):
     total = pd.Series()
     for spectrum in spectr:
-        ser = pd.Series(spectrum)
-        total = total.add(ser, fill_value=0)
+        total = total.add(spectrum, fill_value=0)
     return total
 
 

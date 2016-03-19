@@ -17,15 +17,33 @@ def get_spectra_file(project_name, version):
                         project_name + "-" + version + ".res")
 
 
-def make_spectra(project, projectdir):
-    run_to_result = test_runner.get_test_results(projectdir, project)
+def make_spectra(project_name, projectdir, versions):
+    versions = list(versions)
+    assert len(versions) > 0
+    original_dir = os.getcwd()
 
-    if not os.path.exists(SPECTRA_DIR):
-        os.mkdir(SPECTRA_DIR)
+    os.chdir(projectdir)
+    project = projects.get_project(project_name, versions[0])
+    test_runner.initialize_directory(project)
+    runner = test_runner.TestRunner(project)
 
-    outfile = get_spectra_file(project.name, project.version)
-    print "Saving results to {0}".format(outfile)
-    run_result.save(outfile, run_to_result)
+    runner.load_correct_outputs()
+
+    for v in versions:
+        print "Running version {0}".format(v)
+        project = projects.get_project(project_name, v)
+        runner.set_project(project)
+
+        run_to_result = runner.get_buggy_version_results()
+        os.chdir(original_dir)
+
+        if not os.path.exists(SPECTRA_DIR):
+            os.mkdir(SPECTRA_DIR)
+
+        outfile = get_spectra_file(project.name, project.version)
+        print "Saving results to {0}".format(outfile)
+        run_result.save(outfile, run_to_result)
+        os.chdir(projectdir)
 
 
 def get_tarantula_output(project_name, version, use_filter):
@@ -83,10 +101,8 @@ def main():
             return
 
         project_dir = args[0]
-        for v in projects.get_version_names(project_name):
-            print "Generating spectra for version {0}".format(v)
-            project = projects.get_project(project_name, v)
-            make_spectra(project, project_dir)
+        make_spectra(project_name, project_dir,
+                     projects.get_version_names(project_name))
     elif command == "make-spectra":
         if len(args) < 2:
             print "Usage: make-spectra project-dir version"
@@ -94,12 +110,7 @@ def main():
 
         project_dir = args[0]
         version = args[1]
-
-        project = projects.get_project(project_name, version)
-        if project is None:
-            print "Unkown project {0}".format(project_name)
-            return
-        make_spectra(project, project_dir)
+        make_spectra(project_name, project_dir, [version])
     elif command == "find-bugs":
         if len(args) < 2:
             print "Usage: find-bugs version filter|nofilter"

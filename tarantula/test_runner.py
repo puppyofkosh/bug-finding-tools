@@ -22,18 +22,74 @@ BUGGY_RUNNABLE = "buggy.out"
 GCC_ARGS = ["-std=c99"]
 GCC_INSTRUMENTATION_ARGS = ["-fprofile-arcs", "-ftest-coverage"]
 
+# A TestRunner will run the correct program on all the test inputs and
+# store the results. Then, you can request to run it on a buggy
+# program to get which tests fail
+class TestRunner(object):
+    def __init__(self, project):
+        self._project = project
+        self._correct_outputs = None
+        
+
+    def load_correct_outputs(self):
+        assert self._correct_outputs is None
+
+        # Copy the buggy source into our current dir. We need to be in the same dir
+        # as we compiled to run gcov, and if we try to keep the buggy version in
+        # its own directory, we'll have to call chdir() over and over
+        working_runnable = compile_working_version(self._project)
+        
+        # FIXME: make get_tests lazily get the tests
+        test_lines = get_tests(self._project.test_file)
+        self._correct_outputs = []
+        for i, test in enumerate(test_lines):
+            if i % 500 == 0:
+                print "Running correct version on test {0}".format(i)
+
+            expected_output = get_output(working_runnable + " " +  test, True)
+            self._correct_outputs.append(expected_output)
+
+    def set_project(self, project):
+        """Switch project so we can run a different buggy version"""
+        assert project.name == self._project.name
+        self._project = project
+
+    def get_buggy_version_results(self):
+        buggy_program = compile_buggy_version(self._project)
+
+        test_lines = get_tests(self._project.test_file)
+
+        passcount = 0
+        run_to_result = {}
+        for i, test in enumerate(test_lines):
+            if i % 500 == 0:
+                print "Running buggy version test {0}".format(i)
+
+            prog_output = get_output(buggy_program + " " + test, True)
+
+            passed = prog_output == self._correct_outputs[i]
+            if passed:
+                passcount += 1
+
+            trace = gcov_helper.get_trace(self._project.main_src_file)
+            gcov_helper.reset_gcov_counts(self._project.main_src_file)
+
+            spectrum = spectra.make_spectrum_from_trace(trace)
+
+            run_to_result[i] = RunResult(passed=passed, spectrum=spectrum)
+
+        print "Passed {0}/{1}".format(passcount, len(test_lines))
+        return run_to_result
+    
+
 def check_current_directory(project):
     for e in project.get_all_files():
         if not os.path.exists(e):
-            return "{0} doesn't exist".format(e)
-    return None
-
+            raise RuntimeError("{0} doesn't exist".format(e))
 
 def initialize_directory(project):
     # Make sure correct dirs are there
-    err = check_current_directory(project)
-    if err is not None:
-        return err
+    check_current_directory(project)
 
     if not os.path.exists(BUGGY_DIR):
         os.makedirs(BUGGY_DIR)
@@ -47,8 +103,6 @@ def initialize_directory(project):
 
         if not os.path.exists(link_name):
             os.symlink(target_name, link_name)
-
-    return None
 
 
 def run_gcc(args, end_args, infile, outfile):
@@ -73,7 +127,7 @@ def compile_working_version(project):
         raise RuntimeError("Could not compile working version")
 
     os.chdir("..")
-    return True
+    return os.path.join(WORKING_DIR, WORKING_RUNNABLE)
     
 
 def compile_buggy_version(project):
@@ -86,10 +140,9 @@ def compile_buggy_version(project):
                       project.main_src_file, BUGGY_RUNNABLE)
 
     if retcode != 0:
-        print "Error compiling buggy version"
-        return False
+        raise RuntimeError("Error compiling buggy version")
 
-    return True
+    return os.path.join(".", BUGGY_RUNNABLE)
 
 
 def get_tests(testfile):
@@ -99,60 +152,3 @@ def get_tests(testfile):
 
     test_lines = [l.strip() for l in test_lines]
     return test_lines
-
-
-def get_spectra(src_filename,
-                buggy_program, correct_program,
-                testfile):
-    test_lines = get_tests(testfile)
-
-    passcount = 0
-    run_to_result = {}
-    for i, test in enumerate(test_lines):
-        if i % 500 == 0:
-            print "Running test {0}".format(i)
-
-        prog_output = get_output(buggy_program + " " + test, True)
-        expected_output = get_output(correct_program + " " +  test, True)
-
-        passed = prog_output == expected_output
-        if passed:
-            passcount += 1
-
-        trace = gcov_helper.get_trace(src_filename)
-        gcov_helper.reset_gcov_counts(src_filename)
-
-        spectrum = spectra.make_spectrum_from_trace(trace)
-
-        run_to_result[i] = RunResult(passed=passed, spectrum=spectrum)
-
-    print "Passed {0}/{1}".format(passcount, len(test_lines))
-    return run_to_result
-
-
-def get_test_results(projectdir, project):
-    original_dir = os.getcwd()
-
-    os.chdir(projectdir)
-    err = initialize_directory(project)
-    if err is not None:
-        print err
-        return
-
-    # Copy the buggy source into our current dir. We need to be in the same dir
-    # as we compiled to run gcov, and if we try to keep the buggy version in
-    # its own directory, we'll have to call chdir() over and over
-    compile_working_version(project)
-    compile_buggy_version(project)
-
-    run_to_result = get_spectra(project.main_src_file,
-                                os.path.join(".", BUGGY_RUNNABLE),
-                                os.path.join(WORKING_DIR, WORKING_RUNNABLE),
-                                project.test_file)
-
-    # Write the information about the runs to the file
-    # This consists of 1) did the case pass, and 2) which lines executed
-    os.chdir(original_dir)
-
-    return run_to_result
-
