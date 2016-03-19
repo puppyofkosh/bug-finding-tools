@@ -28,26 +28,44 @@ def make_spectra(project, projectdir):
         pickle.dump(run_to_result, fd)
 
 
-def find_bugs(project_name, version):
+def get_tarantula_output(project_name, version):
     run_to_result = {}
     with open(get_spectra_file(project_name, version), "r") as fd:
         run_to_result = pickle.load(fd)
 
     ranks, suspiciousness = tarantula.get_suspicious_lines(run_to_result)
+
+    buggy_lines = projects.get_known_buggy_lines(project_name,
+                                                 version)
+    if buggy_lines is None:
+        print "Buggy lines aren't known for version {0}".format(version)
+        return ranks, suspiciousness, None, None
+
+    line, score = evaluator.get_score(ranks, buggy_lines)
+
+    return (ranks, suspiciousness, line, score)
+
+
+def print_tarantula_result(project_name, version):
+    (ranks, suspiciousness, line, score) = get_tarantula_output(project_name,
+                                                              version)
     results = pd.DataFrame(data={'rank': ranks, 'susp': suspiciousness})
     results.sort_values('rank', inplace=True)
     print results
-
-    interesting_keys = projects.get_known_buggy_lines(project_name,
-                                                      version)
-    if interesting_keys is None:
-        interesting_keys = [134, 135, 136]
-
-    line, score = evaluator.get_score(ranks, interesting_keys)
     print "line {0}: score {1}".format(line, score)
-    for k in interesting_keys:
-        print "line {0}: susp {1}".format(k, suspiciousness.get(k, None))
 
+
+def get_total_scores(project_name):
+    version_to_score = {}
+    for version in projects.get_version_names(project_name):
+        _, __, ___, score = get_tarantula_output(project_name, version)
+        version_to_score[version] = score
+    
+    version_to_score = pd.Series(version_to_score)
+    version_to_score.sort_values(inplace=True, ascending=False)
+    print "Average score is {0}".format(version_to_score.mean())
+    print version_to_score
+    
 
 def main():
     if len(sys.argv) < 3:
@@ -85,7 +103,9 @@ def main():
             print "Usage: find-bugs version"
             return
         version = args[0]
-        find_bugs(project_name, version)
+        print_tarantula_result(project_name, version)
+    elif command == "evaluate-all":
+        get_total_scores(project_name)
     else:
         print "invalid command"
         return

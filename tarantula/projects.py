@@ -104,6 +104,39 @@ PROJECT_TO_BUGGY_LINES = {
 
     "totinfo": {
         "v1": {342},
+        "v2": {85},
+        "v3": {75},
+        "v4": {233},
+        "v5": {105},
+        # FIXME: V6's bug is strange. It is the incorrect value of of a #define
+        # Which lines are the buggy ones?
+        #"v6": set(),
+
+        "v7": {378},
+        "v8": {201},
+        "v9": {106},
+
+        # FIXME: V10's bug is also strange. It's change the type of something
+        # from double to float.
+        # "v10": set(),
+        "v11": {198},
+        "v12": {177},
+        "v13": {394},
+        "v14": {75},
+        "v15": {200},
+        "v16": {99},
+        "v17": {223},
+        "v18": {308},
+
+        # v19 is the same bug as v6
+        #"v19": {},
+
+        "v20": {308},
+        
+        # v21 is similar bug to v19 and v6
+        #"v21": set(),
+        "v22": {352},
+        "v23": {215},
     },
 }
 

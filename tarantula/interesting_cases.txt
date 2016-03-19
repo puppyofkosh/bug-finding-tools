@@ -1,0 +1,5 @@
+
+Tarantula scores low:
+totinfo v5
+totinfo v7
+totinfo v9
