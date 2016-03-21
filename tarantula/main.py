@@ -49,10 +49,14 @@ def make_spectra(project_name, projectdir, versions):
 def get_tarantula_output(project_name, version, use_filter):
     run_to_result = run_result.load(get_spectra_file(project_name, version))
 
-    if use_filter:
-        run_to_result = spectra_filter.filter_spectra(run_to_result)
+    filter_fn = spectra_filter.filter_spectra
+    if not use_filter:
+        filter_fn = spectra_filter.trivial_filter
 
-    ranks, suspiciousness = tarantula.get_suspicious_lines(run_to_result)
+    passing_spectra, failing_spectra = filter_fn(run_to_result)
+
+    ranks, suspiciousness = tarantula.get_suspicious_lines(passing_spectra,
+                                                           failing_spectra)
 
     buggy_lines = projects.get_known_buggy_lines(project_name,
                                                  version)

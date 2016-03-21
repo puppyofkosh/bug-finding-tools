@@ -1,18 +1,27 @@
 # This file contains the actual implementation of tarantula
 
 import pandas as pd
+import run_result
 
+INTERESTING_KEYS = {233}
 
 def _sum_spectra(spectr):
     total = pd.Series()
     for spectrum in spectr:
         total = total.add(spectrum, fill_value=0)
-    return total
+    return total.sort_values(ascending=False)
 
 
 def _compute_suspiciousness(passing_spectra, failing_spectra):
     failing_counts = _sum_spectra(failing_spectra)
     passing_counts = _sum_spectra(passing_spectra)
+
+    print(failing_counts)
+    print(passing_counts)
+
+    for k in INTERESTING_KEYS:
+        print("Failing {0}".format(failing_counts[k]))
+        print("Passing {0}".format(passing_counts[k]))
 
     total_failed = len(failing_spectra)    
     total_passed = len(passing_spectra)
@@ -78,19 +87,11 @@ def _get_statement_ranks(suspiciousness):
     return line_to_rank_ser
 
 
-def get_suspicious_lines(run_to_result):
-    passing_spectra = []
-    failing_spectra = []
-    for run_res in run_to_result.values():
-        if run_res.passed:
-            passing_spectra.append(run_res.spectrum)
-        else:
-            failing_spectra.append(run_res.spectrum)
-
-    assert len(passing_spectra) > 0
-    assert len(failing_spectra) > 0
-    suspiciousness = _compute_suspiciousness(passing_spectra,
-                                             failing_spectra)
+def get_suspicious_lines(passing_res, failing_res):
+    assert len(passing_res) > 0
+    assert len(failing_res) > 0
+    suspiciousness = _compute_suspiciousness(passing_res,
+                                             failing_res)
     ranks = _get_statement_ranks(suspiciousness)
 
     return ranks, suspiciousness

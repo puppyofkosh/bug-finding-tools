@@ -1,3 +1,5 @@
+import run_result
+
 def _spectra_difference(a, b):
     diff = a.add(-1 * b, fill_value=0)
     return diff.abs().sum()
@@ -28,39 +30,33 @@ def get_failing_test(run_to_result):
     assert len(failing) > 0
     return failing[0]
 
+
+def dist_from_furthest(spectrum, spectra):
+    """Return spectrum's distance from the furthest element of spectra"""
+    return max(_spectra_difference(spectrum, f) for f in spectra)
+
+def dist_from_closest(spectrum, spectra):
+    return min(_spectra_difference(spectrum, f) for f in spectra)
+
+def avg_distance(spectrum, spectra):
+    total_dist = sum(_spectra_difference(s, spectrum) for s in spectra)
+    return float(total_dist) / len(spectra)
+
+
 # This is the file that determines which spectra to use, and which not to
 # before we run tarantula.
 def filter_spectra(run_to_result):
-    failing_tests = [t for t, run_res in run_to_result.items()
-                     if not run_res.passed]
+    passing_spectra, failing_spectra = run_result.\
+                                       get_passing_failing(run_to_result)
 
-    # Keep the failing tests and their "nearest neighbors"
-    tests_to_keep = [get_nearest_passing_spectrum(run_to_result[t].spectrum,
-                                                    run_to_result)
-                       for t in failing_tests]
-    tests_to_keep += failing_tests
-    
-    return {test: run_to_result[test] for test in tests_to_keep}
+    passing_to_keep = [p for p in passing_spectra
+                       if dist_from_closest(p, failing_spectra) > 20]
 
-def get_avg(run_to_result):
-    # Find the average distance between spectra
-    failing_test = get_failing_test(run_to_result)
-    passing, failing_spectrum = run_to_result[failing_test]
-    assert not passing
-    total_difference = 0
-    total_compared = 0
-    test_to_diff = {}
-    for test, run_res in run_to_result.items():
-        if not run_res.passed:
-            continue
-        
-        total_compared += 1
-        diff = _spectra_difference(failing_spectrum, run_res.spectrum)
-        total_difference += diff
+    failing_to_keep = failing_spectra
+    return passing_to_keep, failing_to_keep
 
-        test_to_diff[test] = diff
+def trivial_filter(run_to_result):
+    passing_spectra, failing_spectra = run_result.\
+                                       get_passing_failing(run_to_result)
 
-    
-    avg_difference = float(total_difference)/total_compared
-    print("Avg distance is {0}".format(avg_difference))
-    return run_to_result
+    return passing_spectra, failing_spectra
