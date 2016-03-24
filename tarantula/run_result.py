@@ -22,11 +22,11 @@ def load(fname):
     return run_to_result
 
 def get_passing_failing(run_to_result):
-    passing_spectra = []
-    failing_spectra = []
-    for run_res in run_to_result.values():
-        if run_res.passed:
-            passing_spectra.append(run_res.spectrum)
+    passing_spectra = {}
+    failing_spectra = {}
+    for run, res in run_to_result.items():
+        if res.passed:
+            passing_spectra[run] = res.spectrum
         else:
-            failing_spectra.append(run_res.spectrum)
+            failing_spectra[run] = res.spectrum
     return passing_spectra, failing_spectra

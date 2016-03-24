@@ -10,11 +10,18 @@ import tarantula
 import evaluator
 import spectra_filter
 import run_result
+import feature_computer
 
 SPECTRA_DIR = "spectra"
 def get_spectra_file(project_name, version):
     return os.path.join(SPECTRA_DIR,
                         project_name + "-" + version + ".res")
+
+FEATURE_DIR = "features"
+def get_feature_file(project_name, version):
+    fname = project_name + "-" + version + ".feat"
+    fname = os.path.join(FEATURE_DIR, fname)
+    return fname
 
 
 def make_spectra(project_name, projectdir, versions, remake):
@@ -31,7 +38,6 @@ def make_spectra(project_name, projectdir, versions, remake):
     os.chdir(original_dir)
     
     for v in versions:
-
         project = projects.get_project(project_name, v)
         outfile = get_spectra_file(project.name, project.version)
 
@@ -58,11 +64,15 @@ def make_spectra(project_name, projectdir, versions, remake):
 def get_tarantula_output(project_name, version, use_filter):
     run_to_result = run_result.load(get_spectra_file(project_name, version))
 
-    filter_fn = spectra_filter.filter_spectra
-    if not use_filter:
-        filter_fn = spectra_filter.trivial_filter
+    
+    filter_fn = spectra_filter.trivial_filter
+    features = None
+    if use_filter:
+        filter_fn = spectra_filter.filter_spectra
+        feature_file = get_feature_file(project_name, version)
+        features = feature_computer.load(feature_file)
 
-    passing_spectra, failing_spectra = filter_fn(run_to_result)
+    passing_spectra, failing_spectra = filter_fn(run_to_result, features)
 
     ranks, suspiciousness = tarantula.get_suspicious_lines(passing_spectra,
                                                            failing_spectra)
@@ -96,9 +106,38 @@ def get_total_scores(project_name, use_filter):
     
     version_to_score = pd.Series(version_to_score)
     version_to_score.sort_values(inplace=True, ascending=False)
+    return version_to_score
+
+def print_total_scores(project_name, use_filter):
+    version_to_score = get_total_scores(project_name, use_filter)
     print("Average score is {0}".format(version_to_score.mean()))
     print(version_to_score)
-    
+
+def compare_filter(project_name):
+    nofilter_scores = get_total_scores(project_name, False)
+    filter_scores = get_total_scores(project_name, True)
+
+    results = pd.DataFrame({'nofilter': nofilter_scores,
+                            'filter': filter_scores,
+                            'diff': filter_scores - nofilter_scores})
+    results.sort_values('diff', inplace=True)
+    print(results)
+
+def compute_features(project_name):
+    if not os.path.exists(FEATURE_DIR):
+        os.mkdir(FEATURE_DIR)
+
+    for version in projects.get_version_names(project_name):
+        fname = get_feature_file(project_name, version)
+        if os.path.exists(fname):
+            print("V {0} Already exists, skipping".format(version))
+            continue
+
+        print("Computing version {0}".format(version))
+        run_to_result = run_result.load(get_spectra_file(project_name,
+                                                         version))
+
+        feature_computer.save_features(fname, run_to_result)
 
 def main():
     if len(sys.argv) < 3:
@@ -137,7 +176,11 @@ def main():
             print("Usage evaluate-all filter|nofilter")
             return
         use_filter = args[0] == "filter"
-        get_total_scores(project_name, use_filter)
+        print_total_scores(project_name, use_filter)
+    elif command == "compare-filter":
+        compare_filter(project_name)
+    elif command == "compute-features":
+        compute_features(project_name)
     else:
         print("invalid command")
         return

@@ -167,4 +167,5 @@ def get_projects():
 
 
 def get_version_names(projectname):
-    return PROJECT_TO_BUGGY_LINES[projectname].keys()
+    return ["v2"]
+    #return sorted(PROJECT_TO_BUGGY_LINES[projectname].keys())

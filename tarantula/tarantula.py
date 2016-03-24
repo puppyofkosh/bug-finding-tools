@@ -83,5 +83,4 @@ def get_suspicious_lines(passing_res, failing_res):
     suspiciousness = _compute_suspiciousness(passing_res,
                                              failing_res)
     ranks = _get_statement_ranks(suspiciousness)
-
     return ranks, suspiciousness
