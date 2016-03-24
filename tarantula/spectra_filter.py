@@ -24,8 +24,9 @@ def filter_spectra(run_to_result, run_to_feature):
 
     assert set(passing_spectra.keys()) <= set(run_to_feature.keys())
 
+    passing_tests_to_keep = passing_spectra.keys()
     passing_tests_to_keep = [p for p in passing_spectra if
-                             run_to_feature[p].dist_from_closest_failing <= 0.3]
+                             run_to_feature[p].avg_common_executed > 0.5]
 
     passing_to_keep = [passing_spectra[test] for test in passing_tests_to_keep]
     failing_to_keep = failing_spectra.values()

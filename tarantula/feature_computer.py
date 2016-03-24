@@ -5,29 +5,28 @@ import run_result
 
 
 
-FeatureVec = namedtuple('FeatureVec', ['dist_from_closest_failing',
-                                       'dist_from_furthest_failing',
-                                       'avg_dist_from_failing'])
+FeatureVec = namedtuple('FeatureVec', ['closest_common_executed',
+                                       'furthest_common_executed',
+                                       'avg_common_executed'])
 
-
-def _spectra_difference(a, b):
-    diff = a.add(-1 * b)
-    return diff.abs().sum()
-
-def compute_features(passing_spectra, failing_spectra):
+def compute_features(test_to_passing_spectra, test_to_failing_spectra):
     feature_vecs = {}
-    for test, p in passing_spectra.items():
-        
-        
 
-        failing_spectra_diffs = [_spectra_difference(p, other)
-                                 for other in failing_spectra.values()]
-        dist_from_closest = min(failing_spectra_diffs) / float(len(p))
-        dist_from_furthest = max(failing_spectra_diffs) / float(len(p))
-        avg_distance = sum(d for d in failing_spectra_diffs) / float(len(p))
-        vec = FeatureVec(dist_from_closest,
-                         dist_from_furthest,
-                         avg_distance)
+    failing_spectra = test_to_failing_spectra.values()
+    nfailing = len(failing_spectra)
+    for test, p in test_to_passing_spectra.items():
+        plen = float(len(p))
+
+        # Number of positions where they both have a 1
+        commonly_executed = [len(p[((p==other) & (p==1))])
+                             for other in failing_spectra]
+        
+        closest_common_executed = max(commonly_executed) / plen
+        furthest_common_executed = min(commonly_executed) / plen
+        avg_common_executed = sum(commonly_executed) / nfailing / plen
+        vec = FeatureVec(closest_common_executed,
+                         furthest_common_executed,
+                         avg_common_executed)
         feature_vecs[test] = vec
     
     return feature_vecs
