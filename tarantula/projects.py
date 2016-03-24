@@ -108,17 +108,19 @@ PROJECT_TO_BUGGY_LINES = {
         "v3": {75},
         "v4": {233},
         "v5": {105},
-        # FIXME: V6's bug is strange. It is the incorrect value of of a #define
-        # Which lines are the buggy ones?
-        #"v6": set(),
+        # V6's bug is strange. It is the incorrect value of of a #define
+        # We're saying the buggy lines are the lines which use that macro.
+        "v6": {55},
 
         "v7": {378},
         "v8": {201},
         "v9": {106},
 
-        # FIXME: V10's bug is also strange. It's change the type of something
+        # V10's bug is also strange. It's change the type of something
         # from double to float.
-        # "v10": set(),
+        # We're defining the buggy lines to be the lines which use this
+        # variable
+         "v10": {330, 349, 352, 372},
         "v11": {198},
         "v12": {177},
         "v13": {394},
@@ -129,12 +131,13 @@ PROJECT_TO_BUGGY_LINES = {
         "v18": {308},
 
         # v19 is the same bug as v6
-        #"v19": {},
+        "v19": {55},
 
         "v20": {308},
         
         # v21 is similar bug to v19 and v6
-        #"v21": set(),
+        # Anywhere which uses this macro is considered buggy
+        "v21": {75},
         "v22": {352},
         "v23": {215},
     },

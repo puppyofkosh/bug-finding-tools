@@ -1,9 +1,6 @@
 # This file contains the actual implementation of tarantula
 
 import pandas as pd
-import run_result
-
-INTERESTING_KEYS = {233}
 
 def _sum_spectra(spectr):
     total = pd.Series()
@@ -15,13 +12,6 @@ def _sum_spectra(spectr):
 def _compute_suspiciousness(passing_spectra, failing_spectra):
     failing_counts = _sum_spectra(failing_spectra)
     passing_counts = _sum_spectra(passing_spectra)
-
-    print(failing_counts)
-    print(passing_counts)
-
-    for k in INTERESTING_KEYS:
-        print("Failing {0}".format(failing_counts[k]))
-        print("Passing {0}".format(passing_counts[k]))
 
     total_failed = len(failing_spectra)    
     total_passed = len(passing_spectra)

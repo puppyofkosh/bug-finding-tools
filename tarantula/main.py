@@ -17,7 +17,7 @@ def get_spectra_file(project_name, version):
                         project_name + "-" + version + ".res")
 
 
-def make_spectra(project_name, projectdir, versions):
+def make_spectra(project_name, projectdir, versions, remake):
     versions = list(versions)
     assert len(versions) > 0
     original_dir = os.getcwd()
@@ -28,10 +28,20 @@ def make_spectra(project_name, projectdir, versions):
     runner = test_runner.TestRunner(project)
 
     runner.load_correct_outputs()
-
+    os.chdir(original_dir)
+    
     for v in versions:
-        print("Running version {0}".format(v))
+
         project = projects.get_project(project_name, v)
+        outfile = get_spectra_file(project.name, project.version)
+
+        exists = os.path.exists(outfile)
+        if exists and not remake:
+            print("Spectra already exists for {0}. Skipping".format(v))
+            continue
+
+        os.chdir(projectdir)
+        print("Running version {0}".format(v))
         runner.set_project(project)
 
         run_to_result = runner.get_buggy_version_results()
@@ -43,7 +53,6 @@ def make_spectra(project_name, projectdir, versions):
         outfile = get_spectra_file(project.name, project.version)
         print("Saving results to {0}".format(outfile))
         run_result.save(outfile, run_to_result)
-        os.chdir(projectdir)
 
 
 def get_tarantula_output(project_name, version, use_filter):
@@ -106,7 +115,7 @@ def main():
 
         project_dir = args[0]
         make_spectra(project_name, project_dir,
-                     projects.get_version_names(project_name))
+                     projects.get_version_names(project_name), False)
     elif command == "make-spectra":
         if len(args) < 2:
             print("Usage: make-spectra project-dir version")
@@ -114,7 +123,7 @@ def main():
 
         project_dir = args[0]
         version = args[1]
-        make_spectra(project_name, project_dir, [version])
+        make_spectra(project_name, project_dir, [version], True)
     elif command == "find-bugs":
         if len(args) < 2:
             print("Usage: find-bugs version filter|nofilter")
