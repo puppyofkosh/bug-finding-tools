@@ -26,7 +26,7 @@ def filter_spectra(run_to_result, run_to_feature):
 
     passing_tests_to_keep = passing_spectra.keys()
     passing_tests_to_keep = [p for p in passing_spectra if
-                             run_to_feature[p].avg_common_executed > 0.5]
+                             run_to_feature[p].lowest_ratio_failing_both_exec <= 0.8]
 
     passing_to_keep = [passing_spectra[test] for test in passing_tests_to_keep]
     failing_to_keep = failing_spectra.values()
