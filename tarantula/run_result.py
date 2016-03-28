@@ -1,4 +1,3 @@
-import pandas as pd
 import json
 from collections import namedtuple
 
@@ -27,7 +26,7 @@ def load(fname):
     print(fname)
     with open(fname, "r") as fd:
         jsonobj = json.load(fd)
-    
+
     # Convert dictionary representations of RunResults back to RunResults
     run_to_result = {int(test): RunResult(**run_res_dict)
                      for test, run_res_dict
@@ -36,10 +35,8 @@ def load(fname):
     for test, run_res in run_to_result.items():
         # Convert all spectra to pandas series once
         # Convert to binary spectra
-        spectrum = {int(line): 1 if val > 0 else 0
-                    for line,val in run_res.spectrum.items()}
-        spectrum_ser = pd.Series(spectrum).sort_values(ascending=False)
-        run_to_result[test] = run_res._replace(spectrum=spectrum_ser)
+        spectrum = {int(line): val for line,val in run_res.spectrum.items()}
+        run_to_result[test] = run_res._replace(spectrum=spectrum)
 
     _cache[fname] = run_to_result
     return run_to_result

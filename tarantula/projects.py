@@ -1,7 +1,6 @@
 import os
 import copy
 
-
 class Project(object):
 
     def set_bug_version(self, version):
@@ -68,7 +67,15 @@ PROJECT_TO_FILENAME = {
                        ["tot_info.c", "std.h", "gamma.h", "chisq.h"],
                        "tot_info.c",
                        # Must link with math library to use sin/cos/log functions
-                       ["-lm"])
+                       ["-lm"]),
+    "tcas": Project("tcas",
+                    os.path.join("testplans.alt", "universe"),
+                    "inputs",
+                    os.path.join("source.alt", "source.orig"),
+                    os.path.join("versions.alt", "versions.orig"),
+                    ["tcas.c"],
+                    "tcas.c",
+                    []),
 
 }
 
@@ -194,6 +201,26 @@ PROJECT_TO_BUGGY_LINES = {
 
         ## Fails from segfault, apparently
         ## "v32": {115}
+    },
+
+    "tcas": {
+        "v1": {75},
+        "v2": {63},
+        "v3": {120},
+        "v4": {79},
+        "v5": {118},
+        "v6": {104},
+        "v7": {51},
+        "v8": {53},
+        "v9": {89},
+        "v10": {105, 111},
+        "v11": {106, 113, 140, 136},
+        "v12": {118},
+        
+        # Bug is a macro was changed, so buggy line is everywhere
+        # the macro is used
+        "v13": {118},
+        "v14": {118},
     }
 }
 
@@ -220,7 +247,7 @@ def get_projects():
     return PROJECT_TO_FILENAME.keys()
 
 def get_siemens_projects():
-    return ["schedule2", "totinfo", "replace"]
+    return ["schedule2", "totinfo", "replace", "tcas"]
 
 def get_version_names(projectname):
     return sorted(PROJECT_TO_BUGGY_LINES[projectname].keys())

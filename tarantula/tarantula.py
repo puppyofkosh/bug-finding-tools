@@ -1,20 +1,39 @@
 # This file contains the actual implementation of tarantula
 
 import pandas as pd
+import numpy as np
 
 def _sum_spectra(spectr):
     df = pd.DataFrame({i: spec for i,spec in enumerate(spectr)})
     # Sum all columns of dataframe
     total = df.sum(axis=1)
-    return total.sort_values(ascending=False)
+    return total
 
+
+def convert_to_binary_vector_spectrum(spectrum, key_index):
+    return np.array([1.0 if spectrum[k] > 0 else 0.0
+                     for k in key_index])
 
 def _compute_suspiciousness(passing_spectra, failing_spectra):
-    assert all(p.max() == 1 for p in passing_spectra)
-    assert all(f.max() == 1 for f in failing_spectra)
+    # Must be binary spectra
+    assert len(passing_spectra) > 0
+    assert len(failing_spectra) > 0
+    key_index = np.array(sorted(passing_spectra[0].keys()))
 
-    failing_counts = _sum_spectra(failing_spectra)
-    passing_counts = _sum_spectra(passing_spectra)
+    keys = set(key_index)
+    assert all(set(p.keys()) == keys for p in passing_spectra)
+    assert all(set(f.keys()) == keys for f in failing_spectra)
+
+    passing_spectra = [convert_to_binary_vector_spectrum(p, key_index)
+                       for p in passing_spectra]
+    failing_spectra = [convert_to_binary_vector_spectrum(f, key_index)
+                       for f in failing_spectra]
+
+    assert all(max(p) == 1 for p in passing_spectra)
+    assert all(max(f) == 1 for f in failing_spectra)
+
+    passing_counts = sum(passing_spectra)
+    failing_counts = sum(failing_spectra)
 
     total_failed = len(failing_spectra)
     total_passed = len(passing_spectra)
@@ -25,14 +44,18 @@ def _compute_suspiciousness(passing_spectra, failing_spectra):
     failing_counts /= float(total_failed)
     passing_counts /= float(total_passed)
 
-    assert not passing_counts.isnull().values.any()
-    assert not failing_counts.isnull().values.any()
+    denom = failing_counts + passing_counts
 
-    denom = failing_counts.add(passing_counts, fill_value=0)
-    suspiciousness = failing_counts.mul(1.0 / denom, fill_value=0)
-    # In case we just divided by 0 (a line is executable, but never executed)
-    # give it suspiciousness of 0
-    suspiciousness.fillna(0, inplace=True)
+    susp = None
+    with np.errstate(divide='ignore', invalid='ignore'):
+        # Replace any divisions by zero with just 0
+        susp = np.true_divide(failing_counts, denom)
+        susp[ ~ np.isfinite(susp)] = 0  # -inf inf NaN
+
+    susp_dict = {line: susp[i] for i, line in enumerate(key_index)}
+
+    suspiciousness = pd.Series(susp_dict)
+    assert not suspiciousness.isnull().values.any()
     suspiciousness.sort_values(inplace=True, ascending=False)
     return suspiciousness
 
