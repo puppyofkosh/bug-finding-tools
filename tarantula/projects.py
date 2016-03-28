@@ -141,6 +141,56 @@ PROJECT_TO_BUGGY_LINES = {
         "v22": {352},
         "v23": {215},
     },
+
+    "replace": {
+        "v1": {107},
+
+        # This contains missing code, so we say the buggy
+        # line is the one right before/after the missing line
+        "v2": {105, 108},
+        "v3": {494},
+        "v4": {494},
+        "v5": {118},
+        "v6": {315, 318, 319},
+        "v7": {176},
+        "v8": {176},
+
+        # This version contains a weird bug which I believe causes integer
+        # overflow, so gcov reports that the file is corrupted
+        #"v9": {115},
+        "v10": {115},
+        "v11": {116},
+        "v12": {142, 145, 147, 148, 167, 206, 208, 210,
+                226, 228, 234, 272, 275, 282}
+
+        # "v13": {500, 501, 502, 503},
+        # "v14": {370},
+        # "v15": {241},
+        # "v16": {176},
+        # "v17": {75},
+        # "v18": {372},
+
+        # # This one has some weird differences
+        # #"v19": {}
+
+        # "v20": {75},
+
+        # # This one has multiple bugs
+        # #"v21": {}
+        
+        # # This one has a strange difference as well
+        # "v22": {140, 141, 144},
+        # "v23": {74},
+        # "v24": {362},
+        # "v25": {362},
+        # "v26": {370},
+        # "v27": {182},
+        # "v28": {176},
+        # "v29": {176},
+        # "v30": {176},
+        # "v31": {370},
+        # "v32": {115}
+    }
 }
 
 

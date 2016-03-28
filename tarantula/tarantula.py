@@ -61,26 +61,23 @@ def _get_statement_ranks(suspiciousness):
     # Ranks are:                      1   3   3   4
     # We assume we'd look at the 0.5 statements last, so they each get rank 3.
     #
+    
+    df = pd.DataFrame(suspiciousness, columns=['susp'])
+    # maps suspiciousness -> all indices with that suspiciousness
+    gb = df.groupby('susp')
+    
+    ordered_suspiciousness_scores = sorted(set(suspiciousness.values),
+                                           reverse=True)
+    
     line_to_rank = {}
     cur_rank = 1
-    cur_susp = suspiciousness[suspiciousness.index[0]]
-    lines_with_cur_rank = set()
-    for line, susp in suspiciousness.iteritems():
-        if cur_susp != susp:
-            assert len(lines_with_cur_rank) > 0
-            for l in lines_with_cur_rank:
-                line_to_rank[l] = cur_rank
+    for s in ordered_suspiciousness_scores:
+        group = gb.get_group(s)
+        lines = group.index
+        for l in lines:
+            line_to_rank[l] = cur_rank
 
-            cur_rank += 1
-            cur_susp = susp
-            lines_with_cur_rank.clear()
-
-        # No matter what, add this line
-        lines_with_cur_rank.add(line)
-
-    # Add lines with the last rank that didn't get added in the loop
-    for l in lines_with_cur_rank:
-        line_to_rank[l] = cur_rank
+        cur_rank += 1
 
     assert len(line_to_rank) == len(suspiciousness)
     line_to_rank_ser = pd.Series(line_to_rank)
