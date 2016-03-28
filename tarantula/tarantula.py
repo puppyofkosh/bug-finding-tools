@@ -3,13 +3,6 @@
 import pandas as pd
 import numpy as np
 
-def _sum_spectra(spectr):
-    df = pd.DataFrame({i: spec for i,spec in enumerate(spectr)})
-    # Sum all columns of dataframe
-    total = df.sum(axis=1)
-    return total
-
-
 def convert_to_binary_vector_spectrum(spectrum, key_index):
     return np.array([1.0 if spectrum[k] > 0 else 0.0
                      for k in key_index])
