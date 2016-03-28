@@ -3,28 +3,20 @@
 import pandas as pd
 
 def _sum_spectra(spectr):
-    total = pd.Series()
-    for spectrum in spectr:
-        total = total.add(spectrum, fill_value=0)
+    df = pd.DataFrame({i: spec for i,spec in enumerate(spectr)})
+    # Sum all columns of dataframe
+    total = df.sum(axis=1)
     return total.sort_values(ascending=False)
 
 
-def _convert_to_binary_spectrum(spectrum):
-    # All nonzero values -> 0
-    spectrum[spectrum > 0] = 1
-    return spectrum
-
-def _convert_to_binary_spectra(spectra):
-    return [_convert_to_binary_spectrum(s) for s in spectra]
-
 def _compute_suspiciousness(passing_spectra, failing_spectra):
-    passing_spectra = _convert_to_binary_spectra(passing_spectra)
-    failing_spectra = _convert_to_binary_spectra(failing_spectra)
+    assert all(p.max() == 1 for p in passing_spectra)
+    assert all(f.max() == 1 for f in failing_spectra)
 
     failing_counts = _sum_spectra(failing_spectra)
     passing_counts = _sum_spectra(passing_spectra)
 
-    total_failed = len(failing_spectra)    
+    total_failed = len(failing_spectra)
     total_passed = len(passing_spectra)
 
     assert total_failed > 0 and total_passed > 0
@@ -90,5 +82,6 @@ def get_suspicious_lines(passing_res, failing_res):
     assert len(failing_res) > 0
     suspiciousness = _compute_suspiciousness(passing_res,
                                              failing_res)
+
     ranks = _get_statement_ranks(suspiciousness)
     return ranks, suspiciousness

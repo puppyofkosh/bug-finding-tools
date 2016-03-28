@@ -35,7 +35,9 @@ def load(fname):
     
     for test, run_res in run_to_result.items():
         # Convert all spectra to pandas series once
-        spectrum = {int(line): val for line,val in run_res.spectrum.items()}
+        # Convert to binary spectra
+        spectrum = {int(line): 1 if val > 0 else 0
+                    for line,val in run_res.spectrum.items()}
         spectrum_ser = pd.Series(spectrum).sort_values(ascending=False)
         run_to_result[test] = run_res._replace(spectrum=spectrum_ser)
 

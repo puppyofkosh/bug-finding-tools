@@ -1,0 +1,8 @@
+-investigate idea of changing branch suspiciousness to be the max of its two branches.
+
+How badly do the branch examples do?
+
+
+-Try using intersection of statements executed by failing test cases
+-use function optimizer
+-implement tarantula in cpp

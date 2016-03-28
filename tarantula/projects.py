@@ -120,7 +120,7 @@ PROJECT_TO_BUGGY_LINES = {
         # from double to float.
         # We're defining the buggy lines to be the lines which use this
         # variable
-         "v10": {330, 349, 352, 372},
+        "v10": {330, 349, 352, 372},
         "v11": {198},
         "v12": {177},
         "v13": {394},
@@ -184,12 +184,16 @@ PROJECT_TO_BUGGY_LINES = {
         # "v24": {362},
         # "v25": {362},
         # "v26": {370},
-        # "v27": {182},
+        
+        ## Fails from segfault, apparently
+        ## "v27": {182},
         # "v28": {176},
         # "v29": {176},
         # "v30": {176},
         # "v31": {370},
-        # "v32": {115}
+
+        ## Fails from segfault, apparently
+        ## "v32": {115}
     }
 }
 
