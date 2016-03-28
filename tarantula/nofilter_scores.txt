@@ -1,0 +1,96 @@
+spectra/schedule2-v1.res
+spectra/schedule2-v10.res
+spectra/schedule2-v2.res
+spectra/schedule2-v3.res
+spectra/schedule2-v4.res
+spectra/schedule2-v5.res
+spectra/schedule2-v6.res
+spectra/schedule2-v7.res
+spectra/totinfo-v1.res
+spectra/totinfo-v10.res
+spectra/totinfo-v11.res
+spectra/totinfo-v12.res
+spectra/totinfo-v13.res
+spectra/totinfo-v14.res
+spectra/totinfo-v15.res
+spectra/totinfo-v16.res
+spectra/totinfo-v17.res
+spectra/totinfo-v18.res
+spectra/totinfo-v19.res
+spectra/totinfo-v2.res
+spectra/totinfo-v20.res
+spectra/totinfo-v21.res
+spectra/totinfo-v22.res
+spectra/totinfo-v23.res
+spectra/totinfo-v3.res
+spectra/totinfo-v4.res
+spectra/totinfo-v5.res
+spectra/totinfo-v6.res
+spectra/totinfo-v7.res
+spectra/totinfo-v8.res
+spectra/totinfo-v9.res
+spectra/replace-v1.res
+spectra/replace-v10.res
+spectra/replace-v11.res
+spectra/replace-v12.res
+spectra/replace-v2.res
+spectra/replace-v3.res
+spectra/replace-v4.res
+spectra/replace-v5.res
+spectra/replace-v6.res
+spectra/replace-v7.res
+spectra/replace-v8.res
+schedule2-v5     0.992308
+schedule2-v3     0.984252
+schedule2-v2     0.984252
+schedule2-v1     0.889764
+schedule2-v6     0.789062
+schedule2-v4     0.732283
+schedule2-v10    0.250000
+schedule2-v7     0.117188
+totinfo-v1       0.991736
+totinfo-v11      0.959016
+totinfo-v14      0.959016
+totinfo-v15      0.959016
+totinfo-v3       0.959016
+totinfo-v8       0.942623
+totinfo-v22      0.926230
+totinfo-v19      0.836066
+totinfo-v6       0.786885
+totinfo-v2       0.770492
+totinfo-v12      0.754098
+totinfo-v23      0.745902
+totinfo-v17      0.713115
+totinfo-v4       0.713115
+totinfo-v13      0.696721
+totinfo-v7       0.696721
+totinfo-v20      0.622951
+totinfo-v18      0.581967
+totinfo-v5       0.565574
+totinfo-v9       0.565574
+totinfo-v16      0.467213
+totinfo-v10      0.418033
+totinfo-v21      0.303279
+replace-v6       0.979508
+replace-v7       0.967213
+replace-v11      0.946721
+replace-v8       0.934426
+replace-v12      0.909836
+replace-v10      0.909836
+replace-v5       0.868852
+replace-v1       0.827869
+replace-v2       0.767635
+replace-v4       0.602459
+replace-v3       0.602459
+dtype: float64
+0.10  0.20    0.023810
+0.20  0.30    0.023810
+0.30  0.40    0.023810
+0.40  0.50    0.047619
+0.50  0.60    0.071429
+0.60  0.70    0.119048
+0.70  0.80    0.214286
+0.80  0.90    0.095238
+0.90  0.99    0.333333
+0.99  1.00    0.047619
+dtype: float64

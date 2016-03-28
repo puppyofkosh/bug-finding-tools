@@ -3,6 +3,7 @@
 import os
 import sys
 import pandas as pd
+from collections import defaultdict
 
 import projects
 import test_runner
@@ -137,6 +138,37 @@ def compute_features(project_name):
         spectra_file = get_spectra_file(project_name, version)
         feature_computer.make_feature_file(spectra_file, fname)
 
+def get_all_results():
+    res_ser = pd.Series()
+    for proj in projects.get_siemens_projects():
+        ver_to_score = get_total_scores(proj, False)
+        ver_to_score.rename(lambda n: proj + "-" + n, inplace=True)
+
+        res_ser = res_ser.append(ver_to_score)
+
+    print(res_ser)
+
+    BINS = [(0, 0.1), (0.1, 0.2), (0.2, 0.3),
+            (0.3, 0.4), (0.4, 0.5), (0.5, 0.6),
+            (0.6, 0.7), (0.7, 0.8), (0.8, 0.9),
+            (0.9, 0.99), (0.99, 1.0)]
+    bin_to_count = defaultdict(int)
+    for score in res_ser:
+        for b in BINS:
+            if score >= b[0] and score < b[1]:
+                bin_to_count[b] += 1
+                break
+
+    bin_to_count_ser = pd.Series(bin_to_count)
+    assert bin_to_count_ser.sum() == len(res_ser)
+    # Give percentages of how many fall into each bin
+    bin_to_count_ser /= len(res_ser)
+
+    print(bin_to_count_ser)
+
+    return res_ser
+
+
 def main():
     if len(sys.argv) < 3:
         print("usage: {0} projectname command ...".format(sys.argv[0]))
@@ -145,6 +177,12 @@ def main():
     project_name = sys.argv[1]
     command = sys.argv[2]
     args = sys.argv[3:]
+
+    if project_name == "all":
+        assert command == "evaluate-all"
+        get_all_results()
+        return
+
     if command == "make-all-spectra":
         if len(args) < 1:
             print("Usage: make-all-spectra project-dir")

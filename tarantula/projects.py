@@ -219,6 +219,8 @@ def get_project(projectname, version):
 def get_projects():
     return PROJECT_TO_FILENAME.keys()
 
+def get_siemens_projects():
+    return ["schedule2", "totinfo", "replace"]
 
 def get_version_names(projectname):
     return sorted(PROJECT_TO_BUGGY_LINES[projectname].keys())
