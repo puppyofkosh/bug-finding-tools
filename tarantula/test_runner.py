@@ -8,7 +8,6 @@ import os
 import subprocess
 import shutil
 
-import spectra
 import gcov_helper
 from commandio import get_output
 from run_result import RunResult
@@ -71,10 +70,8 @@ class TestRunner(object):
             if passed:
                 passcount += 1
 
-            trace = gcov_helper.get_trace(self._project.main_src_file)
+            spectrum = gcov_helper.get_trace(self._project.main_src_file)
             gcov_helper.reset_gcov_counts(self._project.main_src_file)
-
-            spectrum = spectra.make_spectrum_from_trace(trace)
 
             run_to_result[i] = RunResult(passed=passed, spectrum=spectrum)
 

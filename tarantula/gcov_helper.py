@@ -1,9 +1,5 @@
 import os
-import sys
-import subprocess
-import shutil
 
-import spectra
 from commandio import get_output
 
 def _run_gcov(filename):

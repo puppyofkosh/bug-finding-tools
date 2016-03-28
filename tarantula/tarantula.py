@@ -9,7 +9,18 @@ def _sum_spectra(spectr):
     return total.sort_values(ascending=False)
 
 
+def _convert_to_binary_spectrum(spectrum):
+    # All nonzero values -> 0
+    spectrum[spectrum > 0] = 1
+    return spectrum
+
+def _convert_to_binary_spectra(spectra):
+    return [_convert_to_binary_spectrum(s) for s in spectra]
+
 def _compute_suspiciousness(passing_spectra, failing_spectra):
+    passing_spectra = _convert_to_binary_spectra(passing_spectra)
+    failing_spectra = _convert_to_binary_spectra(failing_spectra)
+
     failing_counts = _sum_spectra(failing_spectra)
     passing_counts = _sum_spectra(passing_spectra)
 

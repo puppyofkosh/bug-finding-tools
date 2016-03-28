@@ -64,7 +64,6 @@ def make_spectra(project_name, projectdir, versions, remake):
 def get_tarantula_output(project_name, version, use_filter):
     run_to_result = run_result.load(get_spectra_file(project_name, version))
 
-    
     filter_fn = spectra_filter.trivial_filter
     features = None
     if use_filter:
@@ -101,7 +100,8 @@ def print_tarantula_result(project_name, version, use_filter):
 def get_total_scores(project_name, use_filter):
     version_to_score = {}
     for version in projects.get_version_names(project_name):
-        _, __, ___, score = get_tarantula_output(project_name, version, use_filter)
+        _, __, ___, score = get_tarantula_output(project_name,
+                                                 version, use_filter)
         version_to_score[version] = score
     
     version_to_score = pd.Series(version_to_score)
@@ -134,10 +134,8 @@ def compute_features(project_name):
             continue
 
         print("Computing version {0}".format(version))
-        run_to_result = run_result.load(get_spectra_file(project_name,
-                                                         version))
-
-        feature_computer.save_features(fname, run_to_result)
+        spectra_file = get_spectra_file(project_name, version)
+        feature_computer.make_feature_file(spectra_file, fname)
 
 def main():
     if len(sys.argv) < 3:

@@ -46,10 +46,10 @@ struct FeatureVec {
     map<string, double> features;
 
     FeatureVec(map<string, double>&& f)
-        :features(f) {
+        :features(std::move(f)) {
     }
 
-    FeatureVec(FeatureVec&& f) {
+    FeatureVec(FeatureVec&& f) noexcept {
         features = std::move(f.features);
     }
 
@@ -86,11 +86,11 @@ FeatureVec compute_features(const vector<int>& spectrum,
         
         auto f = failing[i];
         for (size_t j = 0; j < spectrum.size(); j++) {
-            if (f[j])
+            if (f[j] > 0)
                 nfailing_execd++;
-            if (spectrum[j])
+            if (spectrum[j] > 0)
                 npassing_execd++;
-            if (f[j] && spectrum[j])
+            if (f[j] > 0 && spectrum[j] > 0)
                 ncommon_execd++;
         }
 
@@ -116,12 +116,12 @@ FeatureVec compute_features(const vector<int>& spectrum,
     assert(max_common >= 0);
 
     map<string, double> features = {
-        {"avg_over_failing", avg_over_failing},
-        {"min_over_failing", min_over_failing},
-        {"max_over_failing", max_over_failing},
-        {"avg_over_passing", avg_over_passing},
-        {"min_over_passing", min_over_passing},
-        {"max_over_passing", max_over_passing}
+        {"avg_common_over_failing", avg_over_failing},
+        {"min_common_over_failing", min_over_failing},
+        {"max_common_over_failing", max_over_failing},
+        {"avg_common_over_passing", avg_over_passing},
+        {"min_common_over_passing", min_over_passing},
+        {"max_common_over_passing", max_over_passing}
     };
 
     return FeatureVec(std::move(features));
@@ -151,8 +151,8 @@ map<int, FeatureVec> compute_passing_features(
     return test_to_feature;
 }
 
-std::map<int, RunResult> load_spectra() {
-    std::ifstream in("../spectra/totinfo-v1.res.json", std::ios::in);
+std::map<int, RunResult> load_spectra(const string& fname) {
+    std::ifstream in(fname, std::ios::in);
     
     json j;
     in >> j;
@@ -170,7 +170,8 @@ std::map<int, RunResult> load_spectra() {
     return test_to_res;
 }
 
-void save_features(const map<int, FeatureVec>& feature_vecs) {
+void save_features(const map<int, FeatureVec>& feature_vecs,
+                   const string& outfile) {
     // TODO: Find a better way of doing this?
     // need to overide operator<< probably
 
@@ -181,17 +182,26 @@ void save_features(const map<int, FeatureVec>& feature_vecs) {
         j[std::to_string(it.first)] = vec;
     }
     
-    std::ofstream out("../features/totinfo-v1.feat.json", std::ios::out);
+    std::ofstream out(outfile, std::ios::out);
     out << j;
 }
 
-int main() {
-    std::map<int, RunResult> test_to_res = load_spectra();
+int main(int argc, char** argv) {
+    if (argc < 3) {
+        std::cout << "Usage is " << argv[0] << " input-spectra-file "
+                  << "output-feature-file" << endl;
+        return 0;
+    }
+
+    string spectra_file(argv[1]);
+    string feature_file(argv[2]);
+
+    std::cout << "Loading spectra from " << spectra_file << endl;
+    std::map<int, RunResult> test_to_res = load_spectra(spectra_file);
 
     
     map<int, FeatureVec> feature_vecs = compute_passing_features(test_to_res);
-
-    save_features(feature_vecs);
+    save_features(feature_vecs, feature_file);
 
     return 0;
 }
