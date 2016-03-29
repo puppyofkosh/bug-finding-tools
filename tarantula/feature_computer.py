@@ -13,6 +13,9 @@ FeatureVec = namedtuple(
      "avg_common_over_passing",
      "min_common_over_passing",
      "max_common_over_passing",
+
+     # FIXME: Shuodl call passing_over_intersection
+     "intersection_over_passing",
 ])
 
 def make_feature_file(spectra_file, out_feature_file):

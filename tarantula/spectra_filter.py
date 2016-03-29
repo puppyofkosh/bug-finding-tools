@@ -10,7 +10,8 @@ def filter_spectra(run_to_result, run_to_feature):
 
     passing_tests_to_keep = passing_spectra.keys()
     passing_tests_to_keep = [p for p in passing_spectra if
-                             run_to_feature[p].min_common_over_failing <= 0.8]
+                             #run_to_feature[p].min_common_over_failing <= 0.8 and
+                             run_to_feature[p].intersection_over_passing < 1.0]
 
     passing_to_keep = [passing_spectra[test] for test in passing_tests_to_keep]
     failing_to_keep = list(failing_spectra.values())

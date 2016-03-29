@@ -94,8 +94,10 @@ def print_tarantula_result(project_name, version, use_filter):
                                                                 use_filter)
     results = pd.DataFrame(data={'rank': ranks, 'susp': suspiciousness})
     results.sort_values('rank', inplace=True)
-    print(results)
+    print(results.head(100))
     print("line {0}: score {1}".format(line, score))
+    print("susp: {0}".format(suspiciousness[line]))
+    print("rank: {0}".format(ranks[line]))
 
 
 def get_total_scores(project_name, use_filter):
@@ -179,9 +181,14 @@ def main():
     args = sys.argv[3:]
 
     if project_name == "all":
-        assert command == "evaluate-all"
-        get_all_results()
+        if command == "evaluate-all":
+            get_all_results()
+            return
+        elif command == "compute-features":
+            for p in projects.get_siemens_projects():
+                compute_features(p)
         return
+
 
     if command == "make-all-spectra":
         if len(args) < 1:

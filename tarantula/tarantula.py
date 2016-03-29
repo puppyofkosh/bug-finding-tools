@@ -22,9 +22,6 @@ def _compute_suspiciousness(passing_spectra, failing_spectra):
     failing_spectra = [convert_to_binary_vector_spectrum(f, key_index)
                        for f in failing_spectra]
 
-    assert all(max(p) == 1 for p in passing_spectra)
-    assert all(max(f) == 1 for f in failing_spectra)
-
     passing_counts = sum(passing_spectra)
     failing_counts = sum(failing_spectra)
 
