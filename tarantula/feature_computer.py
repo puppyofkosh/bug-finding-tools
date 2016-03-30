@@ -18,15 +18,21 @@ FeatureVec = namedtuple(
      "intersection_over_passing",
 ])
 
+_cache = {}
+
 def make_feature_file(spectra_file, out_feature_file):
     commandio.get_output(["feature-extractor/feature-extractor", spectra_file,
                           out_feature_file])
     assert os.path.exists(out_feature_file)
 
 def load(filename):
+    if filename in _cache:
+        return _cache[filename]
+
     features = {}
     with open(filename, "r") as fd:
         features = json.load(fd)
 
-    features = {int(test): FeatureVec(**v) for test,v in features.items()}
+    features = {int(test): v for test,v in features.items()}
+    _cache[filename] = features
     return features

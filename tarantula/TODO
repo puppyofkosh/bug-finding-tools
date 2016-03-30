@@ -1,3 +1,12 @@
+3 things to work on:
+  invariants (hold off for now)
+  branching improvement
+  test filtering
+       -Run feature selection on current features
+       -Come up with more binary spectrum features
+       -Use "ulam" distance and nonbinary spectrum features
+  
+
 -investigate idea of changing branch suspiciousness to be the max of its two branches.
 
 How badly do the branch examples do?

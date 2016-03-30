@@ -12,6 +12,8 @@ import evaluator
 import spectra_filter
 import run_result
 import feature_computer
+import tarantula_runner
+import optimizer
 
 SPECTRA_DIR = "spectra"
 def get_spectra_file(project_name, version):
@@ -62,30 +64,37 @@ def make_spectra(project_name, projectdir, versions, remake):
         run_result.save(outfile, run_to_result)
 
 
-def get_tarantula_output(project_name, version, use_filter):
+def get_tarantula_results(project_name, version, filter_obj):
     run_to_result = run_result.load(get_spectra_file(project_name, version))
-
-    filter_fn = spectra_filter.trivial_filter
-    features = None
-    if use_filter:
-        filter_fn = spectra_filter.filter_spectra
-        feature_file = get_feature_file(project_name, version)
-        features = feature_computer.load(feature_file)
-
-    passing_spectra, failing_spectra = filter_fn(run_to_result, features)
-
-    ranks, suspiciousness = tarantula.get_suspicious_lines(passing_spectra,
-                                                           failing_spectra)
 
     buggy_lines = projects.get_known_buggy_lines(project_name,
                                                  version)
     if buggy_lines is None:
         print("Buggy lines aren't known for version {0}".format(version))
-        return ranks, suspiciousness, None, None
+        return None, None, None, None
 
-    line, score = evaluator.get_score(ranks, buggy_lines)
+    return tarantula_runner.get_tarantula_results(run_to_result,
+                                                  filter_obj, buggy_lines)
 
-    return (ranks, suspiciousness, line, score)
+
+def get_tarantula_output(project_name, version, use_filter):
+
+    filter_obj = spectra_filter.TrivialFilter()
+    if use_filter:
+        feature_file = get_feature_file(project_name, version)
+        features = feature_computer.load(feature_file)
+        #filter_obj = spectra_filter.HeuristicFilter(features)
+        v = [0.1, 0.1, 0.1,
+             0.1, 0.1, 0.1,
+             0.1]
+        
+        v = [-59.07164369,  81.16767812, -32.15659794,
+             5.06205734,
+             83.42100009, -32.84513908, -63.71071346]
+        cutoff = 0.46388956
+        filter_obj = spectra_filter.DotProductFilter(v, cutoff, features)
+
+    return get_tarantula_results(project_name, version, filter_obj)
 
 
 def print_tarantula_result(project_name, version, use_filter):
@@ -224,6 +233,8 @@ def main():
         compare_filter(project_name)
     elif command == "compute-features":
         compute_features(project_name)
+    elif command == "optimize":
+        optimizer.optimize_classifier(project_name)
     else:
         print("invalid command")
         return
