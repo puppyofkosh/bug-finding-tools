@@ -23,7 +23,7 @@ def load(fname):
 
     run_to_result = {}
     jsonobj = None
-    print(fname)
+    print("Loading {0}".format(fname))
     with open(fname, "r") as fd:
         jsonobj = json.load(fd)
 

@@ -7,7 +7,7 @@ def convert_to_binary_vector_spectrum(spectrum, key_index):
     return np.array([1.0 if spectrum[k] > 0 else 0.0
                      for k in key_index])
 
-def _compute_suspiciousness(passing_spectra, failing_spectra):
+def compute_suspiciousness(passing_spectra, failing_spectra):
     # Must be binary spectra
     assert len(passing_spectra) > 0
     assert len(failing_spectra) > 0
@@ -50,7 +50,7 @@ def _compute_suspiciousness(passing_spectra, failing_spectra):
     return suspiciousness
 
 
-def _get_statement_ranks(suspiciousness):
+def get_statement_ranks(suspiciousness):
     assert len(suspiciousness) > 0
     assert suspiciousness.max() <= 1.0 and suspiciousness.min() >= 0
     suspiciousness.sort_values(inplace=True, ascending=False)
@@ -90,11 +90,52 @@ def _get_statement_ranks(suspiciousness):
     return line_to_rank_ser
 
 
-def get_suspicious_lines(passing_res, failing_res):
-    assert len(passing_res) > 0
-    assert len(failing_res) > 0
-    suspiciousness = _compute_suspiciousness(passing_res,
-                                             failing_res)
+def eliminate_non_overlapping(suspiciousness, failing_res):
+    intersection = {line: 1 if val else 0
+                    for line, val in failing_res[0].items()}
+    for f in failing_res:
+        for line in intersection:
+            if f[line] == 0 and intersection[line] != 0:
+                intersection[line] = 0
+    
+    for line in intersection:
+        if intersection[line] == 0:
+            suspiciousness[line] = 0.0
+    return suspiciousness
 
-    ranks = _get_statement_ranks(suspiciousness)
-    return ranks, suspiciousness
+class TarantulaRanker(object):
+    def get_suspicious_lines(self, passing_spectra, failing_spectra):
+        assert len(passing_spectra) > 0
+        assert len(failing_spectra) > 0
+        suspiciousness = compute_suspiciousness(passing_spectra,
+                                                failing_spectra)
+
+        ranks = get_statement_ranks(suspiciousness)
+        return ranks, suspiciousness
+        
+class IntersectionTarantulaRanker(object):
+    def _eliminate_non_overlapping(self, suspiciousness, failing_res):
+        intersection = {line: 1 if val else 0
+                        for line, val in failing_res[0].items()}
+        for f in failing_res:
+            for line in intersection:
+                if f[line] == 0 and intersection[line] != 0:
+                    intersection[line] = 0
+
+        for line in intersection:
+            if intersection[line] == 0:
+                suspiciousness[line] = 0.0
+        return suspiciousness
+
+
+    def get_suspicious_lines(self, passing_spectra, failing_spectra):
+        assert len(passing_spectra) > 0
+        assert len(failing_spectra) > 0
+        suspiciousness = compute_suspiciousness(passing_spectra,
+                                                failing_spectra)
+        suspiciousness = self._eliminate_non_overlapping(suspiciousness,
+                                                         failing_spectra)
+
+        ranks = get_statement_ranks(suspiciousness)
+        return ranks, suspiciousness
+            

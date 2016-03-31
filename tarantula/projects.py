@@ -96,6 +96,8 @@ PROJECT_TO_BUGGY_LINES = {
         "v2": {294, 295, 296},
         "v3": {291, 292, 293},
         "v4": {92, 93},
+
+        # Manually changed this one to put buggy statement on a separate line
         "v5": {111} | {112},
         "v6": {77},
         "v7": {292},

@@ -15,11 +15,14 @@ class HeuristicFilter(object):
 
         assert set(passing_spectra.keys()) <= set(self._run_to_feature.keys())
 
-        passing_tests_to_keep = passing_spectra.keys()
-        passing_tests_to_keep = [p for p in passing_spectra if
-                                 #run_to_feature[p].min_common_over_failing <= 0.8 and
-                                 self._run_to_feature[p].\
-                                 intersection_over_passing < 1.0]
+
+        passing_tests_to_keep = []
+        run_to_feature = self._run_to_feature
+        for p in passing_spectra:
+            intersection = run_to_feature[p]['intersection_over_passing']
+
+            if intersection < 1.0:
+                passing_tests_to_keep.append(p)
 
         passing_to_keep = [passing_spectra[test]
                            for test in passing_tests_to_keep]

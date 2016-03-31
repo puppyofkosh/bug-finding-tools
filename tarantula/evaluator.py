@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 # This file evaluates how good a ranking that's produced by tarantula
 # is It takes in a dictionary of line num -> rank, as well as a set of
 # lines which are known to have the bug (often, just one line num) and
@@ -25,3 +27,27 @@ def get_score(line_to_rank_ser, buggy_line_nums):
     assert best_line is not None
     return best_line, best_score
 
+
+RankerResult = namedtuple(
+    'RankerResult',
+    ['ranks',
+     'suspiciousness',
+     'line',
+     'score']
+)
+
+def get_ranker_results(run_to_result,
+                       ranker_obj,
+                       filter_obj,
+                       buggy_lines):
+    passing_spectra, failing_spectra = filter_obj.filter_tests(run_to_result)
+
+    if len(passing_spectra) == 0 or len(failing_spectra) == 0:
+        return None, None, None, None
+
+    ranks, suspiciousness = ranker_obj.get_suspicious_lines(passing_spectra,
+                                                            failing_spectra)
+
+    line, score = get_score(ranks, buggy_lines)
+
+    return RankerResult(ranks, suspiciousness, line, score)
