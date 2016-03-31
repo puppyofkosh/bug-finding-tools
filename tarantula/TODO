@@ -1,7 +1,11 @@
 3 things to work on:
   invariants (hold off for now)
-  branching improvement
   test filtering
+       -Read paper 66 and implement heuristics
+       - Figure out intersection idea! (Taking intersection before doing tarantula
+       equation)
+       -Try to find a classifier that does well on one input and figure out
+       why it does well on that input
        -Run feature selection on current features
        -Come up with more binary spectrum features
        -Use "ulam" distance and nonbinary spectrum features
