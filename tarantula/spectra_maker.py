@@ -9,6 +9,10 @@ def get_spectra_file(project_name, version):
     return os.path.join(SPECTRA_DIR,
                         project_name + "-" + version + ".res")
 
+def load_run_res(project_name, version):
+    return run_result.load(get_spectra_file(project_name,
+                                            version))
+
 def make_spectra(project_name, projectdir, versions, remake):
     versions = list(versions)
     assert len(versions) > 0

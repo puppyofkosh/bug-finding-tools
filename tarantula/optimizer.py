@@ -2,9 +2,21 @@ import scipy.optimize
 
 import projects
 import feature_computer
+import spectra_maker
 import tarantula
 import evaluator
 import spectra_filter
+
+
+def get_res(project_name, version, ranker_obj, filter_obj):
+    run_to_result = spectra_maker.load_run_res(project_name, version)
+    buggy_lines = projects.get_known_buggy_lines(project_name, version)
+
+    rank_res = evaluator.compute_results(run_to_result,
+                                         ranker_obj,
+                                         filter_obj,
+                                         buggy_lines)
+    return rank_res
 
 
 def evaluation_fn(project_name, initial_scores,
@@ -14,27 +26,20 @@ def evaluation_fn(project_name, initial_scores,
     scoresum = 0
     ver = None
     for version in projects.get_version_names(project_name):
-        feature_file = feature_computer.get_feature_file(project_name,
-                                                         version)
-        features = feature_computer.load(feature_file)
-
+        features = feature_computer.get_feature_vecs(project_name, version)
         filter_obj = spectra_filter.DotProductFilter(classify_vector,
                                                      cutoff,
                                                      features)
 
         ranker_obj = tarantula.IntersectionTarantulaRanker()
-        rank_res = evaluator.get_ranker_results(project_name,
-                                                version,
-                                                ranker_obj,
-                                                filter_obj)
+        rank_res = get_res(project_name, version, ranker_obj, filter_obj)
+
         if rank_res is None:
             continue
 
         score = rank_res.score
         scorediff = score - initial_scores[version]
-        if score > 0.8:
-            ver = version
-            scoresum = max(scoresum, scorediff)
+        scoresum += scorediff
 
     print("Score is {0} for version: {1}".format(scoresum, ver))
     return scoresum
@@ -43,10 +48,10 @@ def evaluation_fn(project_name, initial_scores,
 def optimize_classifier(project_name):
     initial_scores = {}
     for version in projects.get_version_names(project_name):
-        filter_obj = spectra_filter.TrivialFilter()
         rank_res = evaluator.get_ranker_results(project_name,
                                                 version,
-                                                filter_obj)
+                                                "intersection",
+                                                "none")
         initial_scores[version] = rank_res.score
 
     def to_optimize(classify_vector_with_cutoff):
@@ -68,4 +73,7 @@ def optimize_classifier(project_name):
                                 maxeval=1,
                                 dwell=1,
                                 full_output=True)
+
+    x0 = res[0]
+    print("Vec is {0}, cutoff {1}".format(x0[:-1], x0[-1]))
     print(res)

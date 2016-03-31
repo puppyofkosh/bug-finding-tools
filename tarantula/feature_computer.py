@@ -47,6 +47,9 @@ def get_feature_file(project_name, version):
     fname = os.path.join(FEATURE_DIR, fname)
     return fname
 
+def get_feature_vecs(project_name, version):
+    return load(get_feature_file(project_name, version))
+
 def compute_features(project_name):
     if not os.path.exists(FEATURE_DIR):
         os.mkdir(FEATURE_DIR)

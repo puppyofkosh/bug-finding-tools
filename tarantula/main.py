@@ -7,63 +7,17 @@ from collections import defaultdict
 
 import projects
 import spectra_maker
-import tarantula
 import evaluator
-import spectra_filter
-import run_result
 import feature_computer
 import optimizer
-import evaluator
-
-
-def get_ranker(project_name, version, ranker_type):
-    if ranker_type == "normal":
-        return tarantula.TarantulaRanker()
-    elif ranker_type == "intersection":
-        return tarantula.IntersectionTarantulaRanker()
-    raise RuntimeError("Unkown filter")
-
-def get_filter(project_name, version, filter_type):
-    if filter_type == "none":
-        return spectra_filter.TrivialFilter()
-
-    feature_file = feature_computer.get_feature_file(project_name, version)
-    features = feature_computer.load(feature_file)
-    if filter_type == "heuristic":
-        return spectra_filter.HeuristicFilter(features)
-    elif filter_type == "learned":
-        v = [-37.62291378,  40.00143376, -70.8492753 ,  10.26629706,
-             -8.56173463,   5.84831631,  69.87114747]
-        cutoff =  14.53469889
-        return spectra_filter.DotProductFilter(v, cutoff, features)
-
-    raise RuntimeError("Unkown filter")
-
-def get_ranker_results(project_name, version, ranker_type, filter_type):
-    ranker_obj = get_ranker(project_name, version, ranker_type)
-    filter_obj = get_filter(project_name, version, filter_type)
-
-    spectra_file = spectra_maker.get_spectra_file(project_name, version)
-    run_to_result = run_result.load(spectra_file)
-
-    buggy_lines = projects.get_known_buggy_lines(project_name,
-                                                 version)
-    if buggy_lines is None:
-        print("Buggy lines aren't known for version {0}".format(version))
-        return None
-
-    return evaluator.get_ranker_results(run_to_result,
-                                        ranker_obj,
-                                        filter_obj,
-                                        buggy_lines)
 
 
 
 def print_tarantula_result(project_name, version, ranker_type, filter_type):
-    ranker_res = get_ranker_results(project_name,
-                                    version,
-                                    ranker_type,
-                                    filter_type)
+    ranker_res = evaluator.get_ranker_results(project_name,
+                                              version,
+                                              ranker_type,
+                                              filter_type)
     ranks = ranker_res.ranks
     suspiciousness = ranker_res.suspiciousness
     line = ranker_res.line
@@ -79,10 +33,10 @@ def print_tarantula_result(project_name, version, ranker_type, filter_type):
 def get_total_scores(project_name, ranker_type, filter_type):
     version_to_score = {}
     for version in projects.get_version_names(project_name):
-        ranker_res = get_ranker_results(project_name,
-                                        version,
-                                        ranker_type,
-                                        filter_type)
+        ranker_res = evaluator.get_ranker_results(project_name,
+                                                  version,
+                                                  ranker_type,
+                                                  filter_type)
         version_to_score[version] = ranker_res.score
     
     version_to_score = pd.Series(version_to_score)
@@ -163,7 +117,7 @@ def main():
 
     if project_name == "all":
         args = sys.argv[3:]
-        if command == "compare-all":
+        if command == "compare-filter":
             ranker_type = args[0]
             filter_type = args[1]
             compare_all_results(ranker_type, filter_type)
@@ -177,10 +131,7 @@ def main():
                 feature_computer.compute_features(p)
         return
 
-
-
     args = sys.argv[3:]
-
     if command == "make-all-spectra":
         if len(args) < 1:
             print("Usage: make-all-spectra project-dir")

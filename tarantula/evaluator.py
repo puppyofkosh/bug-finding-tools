@@ -1,5 +1,12 @@
 from collections import namedtuple
 
+import spectra_maker
+import projects
+import tarantula
+import spectra_filter
+import run_result
+import feature_computer
+
 # This file evaluates how good a ranking that's produced by tarantula
 # is It takes in a dictionary of line num -> rank, as well as a set of
 # lines which are known to have the bug (often, just one line num) and
@@ -36,14 +43,13 @@ RankerResult = namedtuple(
      'score']
 )
 
-def get_ranker_results(run_to_result,
-                       ranker_obj,
-                       filter_obj,
-                       buggy_lines):
+def compute_results(run_to_result, ranker_obj,
+                    filter_obj,
+                    buggy_lines):
     passing_spectra, failing_spectra = filter_obj.filter_tests(run_to_result)
 
     if len(passing_spectra) == 0 or len(failing_spectra) == 0:
-        return None, None, None, None
+        return None
 
     ranks, suspiciousness = ranker_obj.get_suspicious_lines(passing_spectra,
                                                             failing_spectra)
@@ -51,3 +57,44 @@ def get_ranker_results(run_to_result,
     line, score = get_score(ranks, buggy_lines)
 
     return RankerResult(ranks, suspiciousness, line, score)
+
+def get_ranker(project_name, version, ranker_type):
+    if ranker_type == "normal":
+        return tarantula.TarantulaRanker()
+    elif ranker_type == "intersection":
+        return tarantula.IntersectionTarantulaRanker()
+    raise RuntimeError("Unkown filter")
+
+def get_filter(project_name, version, filter_type):
+    if filter_type == "none":
+        return spectra_filter.TrivialFilter()
+
+    feature_file = feature_computer.get_feature_file(project_name, version)
+    features = feature_computer.load(feature_file)
+    if filter_type == "heuristic":
+        return spectra_filter.HeuristicFilter(features)
+    elif filter_type == "learned":
+        v = [-79.76452309,   6.60537632,  43.80008987, -46.30573314,
+         88.65471586, -55.41671844,  82.72811809]
+        cutoff = 10.12807542
+        return spectra_filter.DotProductFilter(v, cutoff, features)
+
+    raise RuntimeError("Unkown filter")
+
+def get_ranker_results(project_name, version, ranker_type, filter_type):
+    ranker_obj = get_ranker(project_name, version, ranker_type)
+    filter_obj = get_filter(project_name, version, filter_type)
+
+    spectra_file = spectra_maker.get_spectra_file(project_name, version)
+    run_to_result = run_result.load(spectra_file)
+
+    buggy_lines = projects.get_known_buggy_lines(project_name,
+                                                 version)
+    if buggy_lines is None:
+        print("Buggy lines aren't known for version {0}".format(version))
+        return None
+
+    return compute_results(run_to_result,
+                              ranker_obj,
+                              filter_obj,
+                              buggy_lines)
