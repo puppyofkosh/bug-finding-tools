@@ -63,7 +63,7 @@ def get_ranker(project_name, version, ranker_type):
         return tarantula.TarantulaRanker()
     elif ranker_type == "intersection":
         return tarantula.IntersectionTarantulaRanker()
-    raise RuntimeError("Unkown filter")
+    raise RuntimeError("Unkown ranker {0}".format(ranker_type))
 
 def get_filter(project_name, version, filter_type):
     if filter_type == "none":
@@ -79,7 +79,7 @@ def get_filter(project_name, version, filter_type):
         cutoff = 10.12807542
         return spectra_filter.DotProductFilter(v, cutoff, features)
 
-    raise RuntimeError("Unkown filter")
+    raise RuntimeError("Unkown filter {0}".format(filter_type))
 
 def get_ranker_results(project_name, version, ranker_type, filter_type):
     ranker_obj = get_ranker(project_name, version, ranker_type)

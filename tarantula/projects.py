@@ -170,22 +170,28 @@ PROJECT_TO_BUGGY_LINES = {
         "v10": {115},
         "v11": {116},
         "v12": {142, 145, 147, 148, 167, 206, 208, 210,
-                226, 228, 234, 272, 275, 282}
+                226, 228, 234, 272, 275, 282},
 
-        # "v13": {500, 501, 502, 503},
-        # "v14": {370},
-        # "v15": {241},
-        # "v16": {176},
-        # "v17": {75},
-        # "v18": {372},
+        "v13": {500, 501, 502, 503},
+        "v14": {370},
+        "v15": {241},
+        "v16": {176},
+        "v17": {75},
+        "v18": {372},
 
         # # This one has some weird differences
-        # #"v19": {}
+        # It relies on unitialized memory (line 515)
+        # It also changes a constant (calls fgets with a different argument)
+        "v19": {515, 44},
 
-        # "v20": {75},
+        "v20": {75},
 
         # # This one has multiple bugs
-        # #"v21": {}
+        # "v21": {44, 209, 55,
+                
+        #         # Any line which includes "MAXPAT" (a macro changed)
+        #         # is considered buggy
+        #     }
         
         # # This one has a strange difference as well
         # "v22": {140, 141, 144},

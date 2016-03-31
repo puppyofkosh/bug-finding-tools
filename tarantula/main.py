@@ -105,7 +105,12 @@ def compare_all_results(ranker_type, filter_type):
                          'diff': b_bin_to_count - a_bin_to_count})
     print(scores)
     print(bins)
-    print('average difference is {0}'.format(scores['diff'].mean()))
+    print("average difference is {0}".format(scores['diff'].mean()))
+
+    diff = scores['diff']
+    diff_of_lower = diff[a_scores < 0.9] 
+    print("Average difference for things that were previously under 0.9 {0}"\
+          .format(diff_of_lower.mean()))
 
 def main():
     if len(sys.argv) < 3:
