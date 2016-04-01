@@ -7,6 +7,18 @@ def convert_to_binary_vector_spectrum(spectrum, key_index):
     return np.array([1.0 if spectrum[k] > 0 else 0.0
                      for k in key_index])
 
+def convert_spectra_to_binary(spectra, key_index):
+    return [convert_to_binary_vector_spectrum(s, key_index) for s in spectra]
+
+
+def divide_replace_nan(numerator, denominator, replacement):
+    divided = None
+    with np.errstate(divide='ignore', invalid='ignore'):
+        # Replace any divisions by zero with just 0
+        divided = np.true_divide(numerator, denominator)
+        divided[ ~ np.isfinite(divided)] = replacement  # -inf inf NaN
+    return divided
+
 
 def compute_suspiciousness(passing_spectra, failing_spectra):
     assert len(passing_spectra) > 0
@@ -17,10 +29,10 @@ def compute_suspiciousness(passing_spectra, failing_spectra):
     assert all(set(p.keys()) == keys for p in passing_spectra)
     assert all(set(f.keys()) == keys for f in failing_spectra)
 
-    passing_spectra = [convert_to_binary_vector_spectrum(p, key_index)
-                       for p in passing_spectra]
-    failing_spectra = [convert_to_binary_vector_spectrum(f, key_index)
-                       for f in failing_spectra]
+    passing_spectra = convert_spectra_to_binary(passing_spectra,
+                                                key_index)
+    failing_spectra = convert_spectra_to_binary(failing_spectra,
+                                                key_index)
 
     passing_counts = sum(passing_spectra)
     failing_counts = sum(failing_spectra)
@@ -36,12 +48,7 @@ def compute_suspiciousness(passing_spectra, failing_spectra):
 
     denom = failing_counts + passing_counts
 
-    susp = None
-    with np.errstate(divide='ignore', invalid='ignore'):
-        # Replace any divisions by zero with just 0
-        susp = np.true_divide(failing_counts, denom)
-        susp[ ~ np.isfinite(susp)] = 0  # -inf inf NaN
-
+    susp = divide_replace_nan(failing_counts, denom, 0)
     susp_dict = {line: susp[i] for i, line in enumerate(key_index)}
 
     suspiciousness = pd.Series(susp_dict)
@@ -139,6 +146,48 @@ class IntersectionTarantulaRanker(object):
                                                 failing_spectra)
         suspiciousness = self._eliminate_non_overlapping(suspiciousness,
                                                          failing_spectra)
+
+        ranks = get_statement_ranks(suspiciousness)
+        return ranks, suspiciousness
+
+
+class OchaiaRanker(object):
+    def get_suspicious_lines(self, passing_spectra, failing_spectra):
+        assert len(passing_spectra) > 0
+        assert len(failing_spectra) > 0
+        key_index = np.array(sorted(passing_spectra[0].keys()))
+
+        keys = set(key_index)
+        assert all(set(p.keys()) == keys for p in passing_spectra)
+        assert all(set(f.keys()) == keys for f in failing_spectra)
+
+        passing_spectra = convert_spectra_to_binary(passing_spectra, key_index)
+        failing_spectra = convert_spectra_to_binary(failing_spectra, key_index)
+
+        passing_counts = sum(passing_spectra)
+        failing_counts = sum(failing_spectra)
+
+        total_failed = len(failing_spectra)
+        total_passed = len(passing_spectra)
+
+        assert total_failed > 0 and total_passed > 0
+
+        # Ochaia formula is, for each statement:
+        # (# times executed by failing test)
+        # __________________________________
+        # sqrt((# failing which executed + # of failing which didn't execute) *
+        # (# times executed by failing + # times executed by passing))
+
+        numerator = failing_counts
+        total_failing = np.full(len(passing_spectra[0]), float(total_failed))
+        
+        denom = np.sqrt(total_failing * (failing_counts + passing_counts))
+
+        susp = divide_replace_nan(numerator, denom, 0)
+        susp_dict = {line: susp[i] for i, line in enumerate(key_index)}
+
+        suspiciousness = pd.Series(susp_dict)
+        assert not suspiciousness.isnull().values.any()
 
         ranks = get_statement_ranks(suspiciousness)
         return ranks, suspiciousness

@@ -97,7 +97,7 @@ def compare_all_results(ranker_type, filter_type):
     
     scores = pd.DataFrame({'normal': a_scores,
                            'modified': b_scores,
-                            'diff': b_scores - a_scores})
+                           'diff': b_scores - a_scores})
     scores.sort_values('diff', inplace=True)
 
     bins = pd.DataFrame({'normal': a_bin_to_count,

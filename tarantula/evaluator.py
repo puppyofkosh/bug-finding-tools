@@ -63,6 +63,8 @@ def get_ranker(project_name, version, ranker_type):
         return tarantula.TarantulaRanker()
     elif ranker_type == "intersection":
         return tarantula.IntersectionTarantulaRanker()
+    elif ranker_type == "ochaia":
+        return tarantula.OchaiaRanker()
     raise RuntimeError("Unkown ranker {0}".format(ranker_type))
 
 def get_filter(project_name, version, filter_type):

@@ -187,11 +187,13 @@ PROJECT_TO_BUGGY_LINES = {
         "v20": {75},
 
         # # This one has multiple bugs
-        # "v21": {44, 209, 55,
+        "v21": {44, 209, 55,
                 
-        #         # Any line which includes "MAXPAT" (a macro changed)
-        #         # is considered buggy
-        #     }
+                # Any line which includes "MAXPAT" (a macro changed)
+                # is considered buggy
+                142, 145, 147, 148, 167, 206, 208, 210,
+                226, 228, 234, 272, 275, 282
+            }
         
         # # This one has a strange difference as well
         # "v22": {140, 141, 144},

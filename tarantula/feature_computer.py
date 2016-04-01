@@ -16,8 +16,7 @@ FeatureVec = namedtuple(
      "min_common_over_passing",
      "max_common_over_passing",
 
-     # FIXME: Shuodl call passing_over_intersection
-     "intersection_over_passing",
+     "passing_over_intersection",
 ])
 
 _cache = {}

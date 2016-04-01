@@ -12,6 +12,7 @@ def reset_gcov_counts(filepath):
     # Remove the data file 
     os.remove(filename + ".gcda")
 
+
 def _parse_gcov_output(filename):
     line_to_exec_count = {}
     with open(filename) as f:
