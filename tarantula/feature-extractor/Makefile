@@ -1,5 +1,7 @@
 CC=g++
 CFLAGS=-std=c++11 -O3
 
-main: main.cpp
-	$(CC) $(CFLAGS) -o feature-extractor main.cpp
+CFILES = main.cpp feature_computer.cpp
+
+main: $(CFILES)
+	$(CC) $(CFLAGS) -I external_code/ -o feature-extractor $(CFILES)
