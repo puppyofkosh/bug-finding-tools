@@ -5,14 +5,11 @@
 #include <vector>
 
 #include <json.hpp>
+#include "spectra.h"
 
 using std::vector;
 using json = nlohmann::json;
 
-//typedef vector<int> Spectrum;
-
-#include <Eigen/Dense>
-typedef Eigen::VectorXd Spectrum;
 
 struct RunResult {
     std::map<int, int> spectrum;

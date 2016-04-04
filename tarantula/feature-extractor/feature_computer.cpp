@@ -3,6 +3,7 @@
 
 #include "feature_vec.h"
 #include "run_result.h"
+#include "spectra.h"
 
 using json = nlohmann::json;
 using std::vector;
@@ -10,54 +11,6 @@ using std::map;
 using std::string;
 using std::endl;
 
-
-Spectrum get_intersection_of_spectra(const vector<Spectrum>& spectra) {
-    Spectrum intersection(spectra[0].size());
-    for (const auto& s : spectra)
-        intersection += s;
-
-    for (size_t i = 0; i < intersection.size(); i++)
-        if (intersection[i] < spectra.size())
-            intersection[i] = 0;
-
-    return intersection;
-}
-
-Spectrum get_half_intersection_of_spectra(const vector<Spectrum>& spectra) {
-    
-}
-
-void get_common_execd(const Spectrum& a,
-                      const Spectrum& b,
-                      int* n_a_execd,
-                      int* n_b_execd,
-                      int* n_common_execd,
-                      int* n_common_not_execd) {
-    int na = 0;
-    int nb = 0;
-    int ncommon = 0;
-    int n_notcommon = 0;
-
-    assert(a.size() == b.size());
-    for (size_t j = 0; j < a.size(); j++) {
-        if (a[j] > 0)
-            na++;
-        if (b[j] > 0)
-            nb++;
-        if (a[j] > 0 && b[j] > 0)
-            ncommon++;
-        if (a[j] == 0 && b[j] == 0)
-            n_notcommon++;
-    }
-    if (n_a_execd)
-        *n_a_execd = na;
-    if (n_b_execd)
-        *n_b_execd = nb;
-    if (n_common_execd)
-        *n_common_execd = ncommon;
-    if (n_common_not_execd)
-        *n_common_not_execd = n_notcommon;
-}
 
 void add_min_max_features(const Spectrum& spectrum,
                           const vector<Spectrum>& failing,
@@ -141,6 +94,9 @@ void add_min_max_features(const Spectrum& spectrum,
     features.insert({"min_common_over_passing", min_common_over_passing});
     features.insert({"max_common_over_passing", max_common_over_passing});
 
+    avg_common_ne_over_passing /= failing.size();
+    avg_common_ne_over_failing /= failing.size();
+
     features.insert({"avg_common_ne_over_failing", avg_common_ne_over_failing});
     features.insert({"min_common_ne_over_failing", min_common_ne_over_failing});
     features.insert({"max_common_ne_over_failing", max_common_ne_over_failing});
@@ -153,7 +109,7 @@ void add_intersection_features(const Spectrum& spectrum,
                                const Spectrum& failing_intersection,
                                map<string, double>& features) {
     // Get the percent of "intersection" statements this passing
-    // statement executed
+    // tests executed
     int nfailing_intersection = 0;
     int ncommon_with_intersection = 0;
     int ncommon_not_execd_with_intersection = 0;
@@ -172,7 +128,6 @@ void add_intersection_features(const Spectrum& spectrum,
     // of executable statements
     double intersection_size = double(nfailing_intersection) / spectrum.size();
 
-    features.insert({"intersection_size", intersection_size});
     features.insert({"common_over_intersection", passing_over_intersection});
     features.insert({"common_ne_over_intersection",
                 passing_not_execd_over_intersection});
