@@ -9,7 +9,7 @@ import spectra_maker
 import evaluator
 import feature_computer
 import optimizer
-
+import pd_helper
 
 
 def print_tarantula_result(project_name, version, ranker_type, filter_type):
@@ -66,7 +66,7 @@ def compare_filter(project_name, ranker_type, filter_type):
                             'diff': filter_scores - nofilter_scores})
     results.sort_values('diff', inplace=True)
 
-    print(results)
+    pd_helper.print_df(results)
 
 
 def get_all_results(ranker_type, filter_type):
