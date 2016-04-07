@@ -19,9 +19,9 @@ class HeuristicFilter(object):
         passing_tests_to_keep = []
         run_to_feature = self._run_to_feature
         for p in passing_spectra:
-            intersection = run_to_feature[p]['passing_over_intersection']
+            intersection = run_to_feature[p]['common_over_intersection']
 
-            if intersection < 1.0:
+            if intersection < 0.8:
                 passing_tests_to_keep.append(p)
 
         passing_to_keep = [passing_spectra[test]

@@ -1,9 +1,8 @@
 #! /bin/python
 
-import os
 import sys
-import pandas as pd
 from collections import defaultdict
+import pandas as pd
 
 import projects
 import spectra_maker
@@ -14,10 +13,14 @@ import optimizer
 
 
 def print_tarantula_result(project_name, version, ranker_type, filter_type):
-    ranker_res = evaluator.get_ranker_results(project_name,
-                                              version,
-                                              ranker_type,
-                                              filter_type)
+    failing_to_rankres = evaluator.get_ranker_results(project_name,
+                                                      version,
+                                                      ranker_type,
+                                                      filter_type)
+
+    assert len(failing_to_rankres) == 1
+    ranker_res = next(iter(failing_to_rankres.values()))
+
     ranks = ranker_res.ranks
     suspiciousness = ranker_res.suspiciousness
     line = ranker_res.line
@@ -31,14 +34,18 @@ def print_tarantula_result(project_name, version, ranker_type, filter_type):
 
 
 def get_total_scores(project_name, ranker_type, filter_type):
-    version_to_score = {}
+    version_to_rankres = {}
     for version in projects.get_version_names(project_name):
-        ranker_res = evaluator.get_ranker_results(project_name,
-                                                  version,
-                                                  ranker_type,
-                                                  filter_type)
-        version_to_score[version] = ranker_res.score
+        failing_to_rankres = evaluator.get_ranker_results(project_name,
+                                                          version,
+                                                          ranker_type,
+                                                          filter_type,
+                                                          single_line=True)
+        version_to_rankres.update(failing_to_rankres)
     
+
+    version_to_score = {ver: rank_res.score for ver, rank_res in
+                        version_to_rankres.items()}
     version_to_score = pd.Series(version_to_score)
     version_to_score.sort_values(inplace=True, ascending=False)
     return version_to_score
@@ -49,8 +56,10 @@ def print_total_scores(project_name, ranker_type, filter_type):
     print(version_to_score)
 
 def compare_filter(project_name, ranker_type, filter_type):
-    nofilter_scores = get_total_scores(project_name, "normal", "none")
+    print("Computing with filter")
     filter_scores = get_total_scores(project_name, ranker_type, filter_type)
+    print("Computing without filter")
+    nofilter_scores = get_total_scores(project_name, "normal", "none")
 
     results = pd.DataFrame({'nofilter': nofilter_scores,
                             'filter': filter_scores,
