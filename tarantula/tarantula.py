@@ -51,64 +51,35 @@ def compute_suspiciousness(passing_spectra, failing_spectra):
     susp = divide_replace_nan(failing_counts, denom, 0)
     susp_dict = {line: susp[i] for i, line in enumerate(key_index)}
 
-    suspiciousness = pd.Series(susp_dict)
-    assert not suspiciousness.isnull().values.any()
-    suspiciousness.sort_values(inplace=True, ascending=False)
-    return suspiciousness
+    return susp_dict
 
 
-def get_statement_ranks(suspiciousness):
-    assert len(suspiciousness) > 0
-    assert suspiciousness.max() <= 1.0 and suspiciousness.min() >= 0
-    suspiciousness.sort_values(inplace=True, ascending=False)
-
-    #
-    # We rank statements by how many statements we'd have to look
-    # at until we got to this one (starting from 1), going from
-    # high to low suspiciousness.
-    # If two statements have the same suspiciousness, then we give all the
-    # statements the rank, assuming we look at it last. In other words,
-    # all of the statements with the same suspiciousness get the same rank.
-    # Example: Suspiciousnesses are: 0.8 0.5 0.5 0.3
-    # Ranks are:                      1   3   3   4
-    # We assume we'd look at the 0.5 statements last, so they each get rank 3.
-    #
+def get_statement_ranks(susp_dict):
+    assert len(susp_dict) > 0
     
-    df = pd.DataFrame(suspiciousness, columns=['susp'])
-    # maps suspiciousness -> all indices with that suspiciousness
-    gb = df.groupby('susp')
+    # A lot of this stuff could be accomplished with pandas, and be more
+    # readable, but the cost of creating pandas series is pretty heavy,
+    # and since this function gets called a lot, it has to be as fast
+    # as possible.
     
-    ordered_suspiciousness_scores = sorted(set(suspiciousness.values),
-                                           reverse=True)
+    line_susp_pairs = list(susp_dict.items())
+    # Sort so that we have most suspicious lines first
+    line_susp_pairs = sorted(line_susp_pairs,
+                             key=lambda line_susp: line_susp[1],
+                             reverse=True)
+
+    susps = sorted(set(susp_dict.values()),reverse=True)
     
     line_to_rank = {}
     cur_rank = 1
-    for s in ordered_suspiciousness_scores:
-        group = gb.get_group(s)
-        lines = group.index
-        for l in lines:
-            line_to_rank[l] = cur_rank
+    for line,susp in line_susp_pairs:
+        if susps[cur_rank - 1] != susp:
+            cur_rank += 1
+            assert susp == susps[cur_rank - 1]
+        
+        line_to_rank[line] = cur_rank
+    return line_to_rank
 
-        cur_rank += 1
-
-    assert len(line_to_rank) == len(suspiciousness)
-    line_to_rank_ser = pd.Series(line_to_rank)
-    line_to_rank_ser.sort_values(inplace=True)
-    return line_to_rank_ser
-
-
-def eliminate_non_overlapping(suspiciousness, failing_res):
-    intersection = {line: 1 if val else 0
-                    for line, val in failing_res[0].items()}
-    for f in failing_res:
-        for line in intersection:
-            if f[line] == 0 and intersection[line] != 0:
-                intersection[line] = 0
-    
-    for line in intersection:
-        if intersection[line] == 0:
-            suspiciousness[line] = 0.0
-    return suspiciousness
 
 class TarantulaRanker(object):
     def get_suspicious_lines(self, passing_spectra, failing_spectra):
@@ -116,36 +87,6 @@ class TarantulaRanker(object):
         assert len(failing_spectra) > 0
         suspiciousness = compute_suspiciousness(passing_spectra,
                                                 failing_spectra)
-
-        ranks = get_statement_ranks(suspiciousness)
-        return ranks, suspiciousness
-
-def get_spectra_intersection(spectra):
-    intersection = {line: 1 if val else 0
-                    for line, val in next(iter(spectra)).items()}
-    for f in spectra:
-        for line in intersection:
-            if f[line] == 0 and intersection[line] != 0:
-                intersection[line] = 0
-    return intersection
-
-
-class IntersectionTarantulaRanker(object):
-    def _eliminate_non_overlapping(self, suspiciousness, failing_res):
-        intersection = get_spectra_intersection(failing_res)
-
-        for line in intersection:
-            if intersection[line] == 0:
-                suspiciousness[line] = 0.0
-        return suspiciousness
-
-    def get_suspicious_lines(self, passing_spectra, failing_spectra):
-        assert len(passing_spectra) > 0
-        assert len(failing_spectra) > 0
-        suspiciousness = compute_suspiciousness(passing_spectra,
-                                                failing_spectra)
-        suspiciousness = self._eliminate_non_overlapping(suspiciousness,
-                                                         failing_spectra)
 
         ranks = get_statement_ranks(suspiciousness)
         return ranks, suspiciousness

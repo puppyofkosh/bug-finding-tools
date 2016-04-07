@@ -24,7 +24,8 @@ def get_score(line_to_rank_ser, buggy_line_nums):
             continue
         
         rank = line_to_rank_ser[l]
-        others = line_to_rank_ser[line_to_rank_ser > rank]
+        others = [l for l,r in line_to_rank_ser.items() if r > rank]
+        #others = line_to_rank_ser[line_to_rank_ser > rank]
         score = len(others) / float(len(line_to_rank_ser))
         if best_line is None or score > best_score:
             best_line = l
@@ -61,8 +62,6 @@ def compute_results(run_to_result, ranker_obj,
 def get_ranker(project_name, version, ranker_type):
     if ranker_type == "normal":
         return tarantula.TarantulaRanker()
-    elif ranker_type == "intersection":
-        return tarantula.IntersectionTarantulaRanker()
     elif ranker_type == "ochaia":
         return tarantula.OchaiaRanker()
     raise RuntimeError("Unkown ranker {0}".format(ranker_type))
