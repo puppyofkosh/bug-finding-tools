@@ -63,15 +63,16 @@ def optimize_classifier(project_name):
         # minimize negative
         return -1 * score
 
-    vecsize = 7 + 1
+
+    vecsize = 14 + 1
     lower = [-1.0 for i in range(vecsize)]
     upper = [1.0 for i in range(vecsize)]
     x0 = [0.1 for i in range(vecsize)]
 
     res = scipy.optimize.anneal(to_optimize, x0,
-                                maxiter=1,
-                                maxeval=1,
-                                dwell=1,
+                                #maxiter=1,
+                                maxeval=10,
+                                dwell=5,
                                 full_output=True)
 
     x0 = res[0]

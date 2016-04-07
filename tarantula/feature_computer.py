@@ -7,18 +7,6 @@ import commandio
 import spectra_maker
 import projects
 
-FeatureVec = namedtuple(
-    'FeatureVec',
-    ["avg_common_over_failing",
-     "min_common_over_failing",
-     "max_common_over_failing",
-     "avg_common_over_passing",
-     "min_common_over_passing",
-     "max_common_over_passing",
-
-     "passing_over_intersection",
-])
-
 _cache = {}
 
 def make_feature_file(spectra_file, out_feature_file):

@@ -76,10 +76,11 @@ def get_filter(project_name, version, filter_type):
     if filter_type == "heuristic":
         return spectra_filter.HeuristicFilter(features)
     elif filter_type == "learned":
-        v = [-79.76452309,   6.60537632,  43.80008987, -46.30573314,
-         88.65471586, -55.41671844,  82.72811809]
-        cutoff = 10.12807542
-        return spectra_filter.DotProductFilter(v, cutoff, features)
+        v = [-62.3405955 ,  13.86391412,  11.2309994 ,  -4.03151566,
+       -90.7341109 ,   8.03077839, -50.52596326, -36.57490774,
+        73.2524005 ,  78.83498064,  12.20039375,  78.07912836,
+        82.40447128, -63.78238101, -57.65408425]
+        return spectra_filter.DotProductFilter(v, features)
 
     raise RuntimeError("Unkown filter {0}".format(filter_type))
 

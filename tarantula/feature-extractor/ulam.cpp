@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <vector>
-#include <iostream>
 
 using std::vector;
 
