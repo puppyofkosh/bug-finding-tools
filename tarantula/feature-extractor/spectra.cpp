@@ -1,4 +1,5 @@
 #include <vector>
+#include <cassert>
 
 #include "spectra.h"
 
@@ -9,8 +10,11 @@ Spectrum get_intersection_of_spectra(const vector<Spectrum>& spectra) {
     for (const auto& s : spectra)
         intersection += s;
 
-    for (size_t i = 0; i < intersection.size(); i++)
-        if (intersection[i] < spectra.size())
+    int ssize = (int)spectra.size();
+    assert(ssize > 0);
+
+    for (auto i = 0; i < intersection.size(); i++)
+        if (intersection[i] < (int)spectra.size())
             intersection[i] = 0;
 
     return intersection;
@@ -28,7 +32,7 @@ void get_common_execd(const Spectrum& a,
     int n_notcommon = 0;
 
     assert(a.size() == b.size());
-    for (size_t j = 0; j < a.size(); j++) {
+    for (auto j = 0; j < a.size(); j++) {
         if (a[j] > 0)
             na++;
         if (b[j] > 0)

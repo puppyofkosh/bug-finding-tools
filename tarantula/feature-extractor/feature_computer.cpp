@@ -124,10 +124,6 @@ void add_intersection_features(const Spectrum& spectrum,
     double passing_not_execd_over_intersection =
         double(ncommon_not_execd_with_intersection) / nfailing_intersection;
 
-    // How big intersection of failing tests is relative to total number
-    // of executable statements
-    double intersection_size = double(nfailing_intersection) / spectrum.size();
-
     features.insert({"common_over_intersection", passing_over_intersection});
     features.insert({"common_ne_over_intersection",
                 passing_not_execd_over_intersection});

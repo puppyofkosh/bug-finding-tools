@@ -18,4 +18,5 @@ void get_common_execd(const Spectrum& a,
                       int* n_b_execd,
                       int* n_common_execd,
                       int* n_common_not_execd);
+
 #endif
