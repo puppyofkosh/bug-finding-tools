@@ -43,13 +43,15 @@ namespace PairWiseFeatureComputer {
         int num_failing_execd = 0;
         int num_passing_execd = 0;
         for (auto i = 0; i < failing.size(); i++) {
-            if (failing[i] != passing[i])
+            bool f = failing[i] > 0;
+            bool p = passing[i] > 0;
+            if (f != p)
                 num_different++;
-            if (failing[i])
+            if (f)
                 num_failing_execd++;
-            if (passing[i])
+            if (p)
                 num_passing_execd++;
-            if (passing[i] == failing[i] && passing[i])
+            if (f == p && p)
                 num_common_execd++;
         }
 
