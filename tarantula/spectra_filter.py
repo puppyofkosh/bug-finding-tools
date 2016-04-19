@@ -3,6 +3,33 @@ import numpy as np
 import run_result
 
 
+class DistanceFilter(object):
+    def __init__(self, run_to_feature, feature_name, distance_cutoff):
+        self._run_to_feature = run_to_feature
+        self._feature_name = feature_name
+        self._distance_cutoff = distance_cutoff
+
+
+    def filter_tests(self, run_to_result):
+        passing_spectra, failing_spectra = run_result.\
+                                           get_passing_failing(run_to_result)
+
+        assert set(passing_spectra.keys()) <= set(self._run_to_feature.keys())
+
+        passing_tests_to_keep = []
+        run_to_feature = self._run_to_feature
+        for p in passing_spectra:
+            intersection = run_to_feature[p][self._feature_name]
+
+            if intersection <= self._distance_cutoff:
+                passing_tests_to_keep.append(p)
+
+        passing_to_keep = [passing_spectra[test]
+                           for test in passing_tests_to_keep]
+        failing_to_keep = list(failing_spectra.values())
+        return passing_to_keep, failing_to_keep
+        
+
 # This is the file that determines which spectra to use, and which not to
 # before we run tarantula.
 class HeuristicFilter(object):

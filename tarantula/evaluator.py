@@ -91,39 +91,8 @@ def get_filter(project_name, version, filter_type):
 
     raise RuntimeError("Unkown filter {0}".format(filter_type))
 
-
-def compute_results_single_line(run_to_result, ranker_obj,
-                                filter_obj,
-                                buggy_lines):
-    # For each failing test, we feed the algorithm only that 1 failing test,
-    # and all the passing tests
-    failing_tests = [run for run,res in run_to_result.items() if 
-                     not res.passed]
-
-    failing_to_rankres = {}
-
-    print("There are {0} failing tests".format(len(failing_tests)))
-    for failing_run in failing_tests:
-        # All passing tests, and this one failing test, but no others.
-        new_run_res = {run: res for run,res in run_to_result.items()
-                       if res.passed or run == failing_run}
-
-        r = compute_results(new_run_res, ranker_obj, filter_obj,
-                            buggy_lines)
-        if r is None:
-            print("Warning: we filtered out all the passing tests! {0}",
-                  failing_run)
-
-        failing_to_rankres[failing_run] = r
-    return failing_to_rankres
-
-
-def get_ranker_results(project_name, version, ranker_type, filter_type,
-                       run_res_prov_type):
-    ranker_obj = get_ranker(project_name, version, ranker_type)
-    filter_obj = get_filter(project_name, version, filter_type)
-    provider = get_run_res_provider(run_res_prov_type)
-
+def get_ranker_results_with_objs(project_name, version, ranker_obj, filter_obj,
+                                 provider):
     spectra_file = spectra_maker.get_spectra_file(project_name, version)
     run_to_result = run_result.load(spectra_file)
 
@@ -147,3 +116,13 @@ def get_ranker_results(project_name, version, ranker_type, filter_type,
         key = "{0}-{1}-{2}".format(project_name, version, failing)
         ret[key] = rank_res
     return ret
+
+
+def get_ranker_results(project_name, version,
+                       ranker_type, filter_type,
+                       run_res_prov_type):
+    ranker_obj = get_ranker(project_name, version, ranker_type)
+    filter_obj = get_filter(project_name, version, filter_type)
+    provider = get_run_res_provider(run_res_prov_type)
+    return get_ranker_results_with_objs(project_name, version, ranker_obj,
+                                        filter_obj, provider)
