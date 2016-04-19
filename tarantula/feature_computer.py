@@ -11,7 +11,8 @@ _cache = {}
 
 def make_feature_file(spectra_file, out_feature_file):
     commandio.get_output(["feature-extractor/feature-extractor", spectra_file,
-                          out_feature_file])
+                          out_feature_file,
+                          "pairwise"])
     assert os.path.exists(out_feature_file)
 
 def load(filename):

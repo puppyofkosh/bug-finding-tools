@@ -3,6 +3,7 @@
 import sys
 from collections import defaultdict
 import pandas as pd
+import argparse
 
 import projects
 import spectra_maker
@@ -16,7 +17,8 @@ def print_tarantula_result(project_name, version, ranker_type, filter_type):
     failing_to_rankres = evaluator.get_ranker_results(project_name,
                                                       version,
                                                       ranker_type,
-                                                      filter_type)
+                                                      filter_type,
+                                                      "normal")
 
     assert len(failing_to_rankres) == 1
     ranker_res = next(iter(failing_to_rankres.values()))
@@ -33,14 +35,14 @@ def print_tarantula_result(project_name, version, ranker_type, filter_type):
     print("rank: {0}".format(ranks[line]))
 
 
-def get_total_scores(project_name, ranker_type, filter_type):
+def get_total_scores(project_name, ranker_type, filter_type, provider_type):
     version_to_rankres = {}
     for version in projects.get_version_names(project_name):
         failing_to_rankres = evaluator.get_ranker_results(project_name,
                                                           version,
                                                           ranker_type,
                                                           filter_type,
-                                                          single_line=True)
+                                                          provider_type)
         version_to_rankres.update(failing_to_rankres)
     
 
@@ -50,16 +52,19 @@ def get_total_scores(project_name, ranker_type, filter_type):
     version_to_score.sort_values(inplace=True, ascending=False)
     return version_to_score
 
-def print_total_scores(project_name, ranker_type, filter_type):
-    version_to_score = get_total_scores(project_name, ranker_type, filter_type)
+def print_total_scores(project_name, ranker_type, filter_type, provider_type):
+    version_to_score = get_total_scores(project_name, ranker_type, filter_type,
+                                        provider_type)
     print("Average score is {0}".format(version_to_score.mean()))
     print(version_to_score)
 
-def compare_filter(project_name, ranker_type, filter_type):
+def compare_filter(project_name, ranker_type, filter_type, provider_type):
     print("Computing with filter")
-    filter_scores = get_total_scores(project_name, ranker_type, filter_type)
+    filter_scores = get_total_scores(project_name, ranker_type, filter_type,
+                                     provider_type)
     print("Computing without filter")
-    nofilter_scores = get_total_scores(project_name, "normal", "none")
+    nofilter_scores = get_total_scores(project_name, "normal", "none",
+                                       provider_type)
 
     results = pd.DataFrame({'nofilter': nofilter_scores,
                             'filter': filter_scores,
@@ -69,10 +74,11 @@ def compare_filter(project_name, ranker_type, filter_type):
     pd_helper.print_df(results)
 
 
-def get_all_results(ranker_type, filter_type):
+def get_all_results(ranker_type, filter_type, provider_type):
     res_ser = pd.Series()
     for proj in projects.get_siemens_projects():
-        ver_to_score = get_total_scores(proj, ranker_type, filter_type)
+        ver_to_score = get_total_scores(proj, ranker_type, filter_type,
+                                        provider_type)
         ver_to_score.rename(lambda n: proj + "-" + n, inplace=True)
 
         res_ser = res_ser.append(ver_to_score)
@@ -95,14 +101,16 @@ def get_all_results(ranker_type, filter_type):
 
     return res_ser, bin_to_count_ser
 
-def print_all_results(ranker_type, filter_type):
-    res_ser, bin_to_count_ser = get_all_results(ranker_type, filter_type)
+def print_all_results(ranker_type, filter_type, provider_type):
+    res_ser, bin_to_count_ser = get_all_results(ranker_type, filter_type,
+                                                provider_type)
     print(res_ser)
     print(bin_to_count_ser)
     
-def compare_all_results(ranker_type, filter_type):
-    a_scores, a_bin_to_count = get_all_results("normal", "none")
-    b_scores, b_bin_to_count = get_all_results(ranker_type, filter_type)
+def compare_all_results(ranker_type, filter_type, provider_type):
+    a_scores, a_bin_to_count = get_all_results("normal", "none", provider_type)
+    b_scores, b_bin_to_count = get_all_results(ranker_type, filter_type,
+                                               provider_type)
     
     scores = pd.DataFrame({'normal': a_scores,
                            'modified': b_scores,
@@ -134,12 +142,13 @@ def main():
         if command == "compare-filter":
             ranker_type = args[0]
             filter_type = args[1]
-            compare_all_results(ranker_type, filter_type)
+            provider_type = args[2]
+            compare_all_results(ranker_type, filter_type, provider_type)
         if command == "evaluate-all":
             ranker_type = args[0]
             filter_type = args[1]
-            print_all_results(ranker_type, filter_type)
-            return
+            provider_type = args[2]
+            print_all_results(ranker_type, filter_type, provider_type)
         elif command == "compute-features":
             for p in projects.get_siemens_projects():
                 feature_computer.compute_features(p)
@@ -170,7 +179,6 @@ def main():
         version = args[0]
         ranker_type = args[1]
         filter_type = args[2]
-
         print_tarantula_result(project_name, version,
                                ranker_type, filter_type)
     elif command == "evaluate-all":
@@ -179,11 +187,14 @@ def main():
             return
         ranker_type = args[0]
         filter_type = args[1]
-        print_total_scores(project_name, ranker_type, filter_type)
+        provider_type = args[2]
+        print_total_scores(project_name, ranker_type, filter_type,
+                           provider_type)
     elif command == "compare-filter":
         ranker_type = args[0]
         filter_type = args[1]
-        compare_filter(project_name, ranker_type, filter_type)
+        provider_type = args[2]
+        compare_filter(project_name, ranker_type, filter_type, provider_type)
     elif command == "compute-features":
         feature_computer.compute_features(project_name)
     elif command == "optimize":

@@ -2,6 +2,7 @@ import scipy.optimize
 
 import projects
 import feature_computer
+from run_result_provider import TrivialProvider
 import spectra_maker
 import tarantula
 import evaluator
@@ -31,7 +32,7 @@ def evaluation_fn(project_name, initial_scores,
                                                      cutoff,
                                                      features)
 
-        ranker_obj = tarantula.IntersectionTarantulaRanker()
+        ranker_obj = tarantula.TarantulaRanker()
         rank_res = get_res(project_name, version, ranker_obj, filter_obj)
 
         if rank_res is None:
@@ -48,10 +49,13 @@ def evaluation_fn(project_name, initial_scores,
 def optimize_classifier(project_name):
     initial_scores = {}
     for version in projects.get_version_names(project_name):
-        rank_res = evaluator.get_ranker_results(project_name,
+        rank_res_d = evaluator.get_ranker_results(project_name,
                                                 version,
                                                 "intersection",
-                                                "none")
+                                                "none",
+                                                TrivialProvider())
+        assert len(rank_res_d) == 1
+        rank_res = next(iter(rank_res_d.values()))
         initial_scores[version] = rank_res.score
 
     def to_optimize(classify_vector_with_cutoff):

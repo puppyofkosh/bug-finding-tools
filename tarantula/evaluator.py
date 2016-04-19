@@ -6,6 +6,7 @@ import tarantula
 import spectra_filter
 import run_result
 import feature_computer
+import run_result_provider
 
 # This file evaluates how good a ranking that's produced by tarantula
 # is It takes in a dictionary of line num -> rank, as well as a set of
@@ -66,6 +67,13 @@ def get_ranker(project_name, version, ranker_type):
         return tarantula.OchaiaRanker()
     raise RuntimeError("Unkown ranker {0}".format(ranker_type))
 
+def get_run_res_provider(t):
+    if t == "normal":
+        return run_result_provider.TrivialProvider()
+    elif t == "singlefailing":
+        return run_result_provider.SingleFailingProvider()
+    raise RuntimeError("Unkown run res provider {0}".format(t))
+
 def get_filter(project_name, version, filter_type):
     if filter_type == "none":
         return spectra_filter.TrivialFilter()
@@ -111,9 +119,10 @@ def compute_results_single_line(run_to_result, ranker_obj,
 
 
 def get_ranker_results(project_name, version, ranker_type, filter_type,
-                       single_line=False):
+                       run_res_prov_type):
     ranker_obj = get_ranker(project_name, version, ranker_type)
     filter_obj = get_filter(project_name, version, filter_type)
+    provider = get_run_res_provider(run_res_prov_type)
 
     spectra_file = spectra_maker.get_spectra_file(project_name, version)
     run_to_result = run_result.load(spectra_file)
@@ -124,20 +133,17 @@ def get_ranker_results(project_name, version, ranker_type, filter_type,
         print("Buggy lines aren't known for version {0}".format(version))
         return None
 
-    if single_line:
-        failing_to_rankres = compute_results_single_line(run_to_result,
-                                                         ranker_obj,
-                                                         filter_obj,
-                                                         buggy_lines)
-        ret = {}
-        for failing,rank_res in failing_to_rankres.items():
-            key = "{0}-{1}-{2}".format(project_name, version, failing)
-            ret[key] = rank_res
-        return ret
 
-    else:
-        rank_res = compute_results(run_to_result,
-                                   ranker_obj,
-                                   filter_obj,
-                                   buggy_lines)
-        return {"{0}-{1}".format(project_name, version): rank_res}
+
+    failing_to_rankres = {}
+    for failing_test_num, run_res in provider.get_run_results(run_to_result):
+        failing_to_rankres[failing_test_num] = compute_results(run_res,
+                                                               ranker_obj,
+                                                               filter_obj,
+                                                               buggy_lines)
+
+    ret = {}
+    for failing,rank_res in failing_to_rankres.items():
+        key = "{0}-{1}-{2}".format(project_name, version, failing)
+        ret[key] = rank_res
+    return ret
