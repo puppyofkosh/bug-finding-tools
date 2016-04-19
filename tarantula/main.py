@@ -149,9 +149,6 @@ def main():
             filter_type = args[1]
             provider_type = args[2]
             print_all_results(ranker_type, filter_type, provider_type)
-        elif command == "compute-features":
-            for p in projects.get_siemens_projects():
-                feature_computer.compute_features(p)
         return
 
     args = sys.argv[3:]
@@ -178,8 +175,6 @@ def main():
         filter_type = args[1]
         provider_type = args[2]
         compare_filter(project_name, ranker_type, filter_type, provider_type)
-    elif command == "compute-features":
-        feature_computer.compute_features(project_name)
     elif command == "optimize":
         optimizer.optimize_classifier(project_name)
     else:
