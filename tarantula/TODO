@@ -1,12 +1,17 @@
 -get rid of project_name, version pair BS
 
+Ideas from meeting 4/4
+-incrementally build set of passing tests to provide labels
+-just optimize whole function of how thing performs
+
+-try using only 1 failing test case
+
 3 things to work on:
   invariants (hold off for now)
   test filtering
        -try 1, 1/2, 1/3 idea
        Maybe do bug finding line by line on siemens program input (the inputs lines
        are often independent)
-       -Try ochaia formula
        -Read paper 66 and implement heuristics
        -Try to find a classifier that does well on one input and figure out
        why it does well on that input
