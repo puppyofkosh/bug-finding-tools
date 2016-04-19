@@ -127,8 +127,5 @@ class OchaiaRanker(object):
         susp = divide_replace_nan(numerator, denom, 0)
         susp_dict = {line: susp[i] for i, line in enumerate(key_index)}
 
-        suspiciousness = pd.Series(susp_dict)
-        assert not suspiciousness.isnull().values.any()
-
-        ranks = get_statement_ranks(suspiciousness)
-        return ranks, suspiciousness
+        ranks = get_statement_ranks(susp_dict)
+        return ranks, susp_dict

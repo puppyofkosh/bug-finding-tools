@@ -130,50 +130,43 @@ def compare_all_results(ranker_type, filter_type, provider_type):
           .format(diff_of_lower.mean()))
 
 def main():
-    if len(sys.argv) < 3:
-        print("usage: {0} projectname command ...".format(sys.argv[0]))
-        print("Valid projects are: {0}".format({}))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("project_name", help="Name of project")
+    parser.add_argument("command", help="A command")
+    parser.add_argument("ranker_type",
+                        help="ranker type, either normal or ochaia")
+    parser.add_argument("filter_type", help="filter type")
+    parser.add_argument("run_result_provider_type",
+                        help="either normal, or singlefailing")
+    parser.add_argument("--bugversion", help="The version of bug to use")
+    args = parser.parse_args()
 
-    project_name = sys.argv[1]
-    command = sys.argv[2]
+    project_name = args.project_name
+    command = args.command
 
+    ranker_type = args.ranker_type
+    filter_type = args.filter_type
+    provider_type = args.run_result_provider_type
+    
     if project_name == "all":
-        args = sys.argv[3:]
         if command == "compare-filter":
-            ranker_type = args[0]
-            filter_type = args[1]
-            provider_type = args[2]
             compare_all_results(ranker_type, filter_type, provider_type)
         if command == "evaluate-all":
-            ranker_type = args[0]
-            filter_type = args[1]
-            provider_type = args[2]
             print_all_results(ranker_type, filter_type, provider_type)
         return
 
-    args = sys.argv[3:]
     if command == "find-bugs":
-        if len(args) < 3:
-            print("Usage: find-bugs version ranker-type filter-type")
-            return
-        version = args[0]
-        ranker_type = args[1]
-        filter_type = args[2]
+        version = args.bugversion
+        assert version
         print_tarantula_result(project_name, version,
                                ranker_type, filter_type)
     elif command == "evaluate-all":
         if len(args) < 1:
             print("Usage evaluate-all ranker-type filter-type")
             return
-        ranker_type = args[0]
-        filter_type = args[1]
-        provider_type = args[2]
         print_total_scores(project_name, ranker_type, filter_type,
                            provider_type)
     elif command == "compare-filter":
-        ranker_type = args[0]
-        filter_type = args[1]
-        provider_type = args[2]
         compare_filter(project_name, ranker_type, filter_type, provider_type)
     elif command == "optimize":
         optimizer.optimize_classifier(project_name)
