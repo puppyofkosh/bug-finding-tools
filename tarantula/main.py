@@ -155,24 +155,7 @@ def main():
         return
 
     args = sys.argv[3:]
-    if command == "make-all-spectra":
-        if len(args) < 1:
-            print("Usage: make-all-spectra project-dir")
-            return
-
-        project_dir = args[0]
-        spectra_maker.make_spectra(project_name, project_dir,
-                     projects.get_version_names(project_name), False)
-    elif command == "make-spectra":
-        if len(args) < 2:
-            print("Usage: make-spectra project-dir version")
-            return
-
-        project_dir = args[0]
-        version = args[1]
-        spectra_maker.make_spectra(project_name,
-                                   project_dir, [version], True)
-    elif command == "find-bugs":
+    if command == "find-bugs":
         if len(args) < 3:
             print("Usage: find-bugs version ranker-type filter-type")
             return
