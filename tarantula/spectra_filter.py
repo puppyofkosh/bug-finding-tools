@@ -3,9 +3,11 @@ import numpy as np
 import run_result
 
 
-class DistanceFilter(object):
-    def __init__(self, run_to_feature, feature_name, distance_cutoff):
-        self._run_to_feature = run_to_feature
+class SingleFailingDistanceFilter(object):
+    def __init__(self, feature_obj, feature_name, distance_cutoff):
+        self._key_index = feature_obj.key_index
+        self._feature_index = self._key_index.index(feature_name)
+        self._feature_map = feature_obj.feature_map
         self._feature_name = feature_name
         self._distance_cutoff = distance_cutoff
 
@@ -13,15 +15,15 @@ class DistanceFilter(object):
     def filter_tests(self, run_to_result):
         passing_spectra, failing_spectra = run_result.\
                                            get_passing_failing(run_to_result)
-
-        assert set(passing_spectra.keys()) <= set(self._run_to_feature.keys())
+        assert len(failing_spectra) == 1
+        failing_test = next(iter(failing_spectra.keys()))
 
         passing_tests_to_keep = []
-        run_to_feature = self._run_to_feature
-        for p in passing_spectra:
-            intersection = run_to_feature[p][self._feature_name]
 
-            if intersection <= self._distance_cutoff:
+        for p in passing_spectra:
+            vec = self._feature_map[failing_test][p]
+
+            if vec[self._feature_index] <= self._distance_cutoff:
                 passing_tests_to_keep.append(p)
 
         passing_to_keep = [passing_spectra[test]

@@ -35,9 +35,13 @@ def print_tarantula_result(project_name, version, ranker_type, filter_type):
     print("rank: {0}".format(ranks[line]))
 
 
-def get_total_scores(project_name, ranker_type, filter_type, provider_type):
+def get_total_scores(project_name, ranker_type, filter_type, provider_type,
+                     versions=None):
     version_to_rankres = {}
-    for version in projects.get_version_names(project_name):
+    if versions is None:
+        versions = projects.get_version_names(project_name)
+
+    for version in versions:
         failing_to_rankres = evaluator.get_ranker_results(project_name,
                                                           version,
                                                           ranker_type,
@@ -52,9 +56,10 @@ def get_total_scores(project_name, ranker_type, filter_type, provider_type):
     version_to_score.sort_values(inplace=True, ascending=False)
     return version_to_score
 
-def print_total_scores(project_name, ranker_type, filter_type, provider_type):
+def print_total_scores(project_name, ranker_type, filter_type, provider_type,
+                       versions=None):
     version_to_score = get_total_scores(project_name, ranker_type, filter_type,
-                                        provider_type)
+                                        provider_type, versions=versions)
     print("Average score is {0}".format(version_to_score.mean()))
     print(version_to_score)
 
@@ -160,10 +165,12 @@ def main():
         assert version
         print_tarantula_result(project_name, version,
                                ranker_type, filter_type)
+    elif command == "evaluate":
+        version = args.bugversion
+        assert version
+        print_total_scores(project_name, ranker_type, filter_type,
+                           provider_type, versions=[version])
     elif command == "evaluate-all":
-        if len(args) < 1:
-            print("Usage evaluate-all ranker-type filter-type")
-            return
         print_total_scores(project_name, ranker_type, filter_type,
                            provider_type)
     elif command == "compare-filter":

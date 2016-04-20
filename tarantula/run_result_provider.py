@@ -12,9 +12,15 @@ class TrivialProvider(object):
 
 
 class SingleFailingProvider(object):
-    def get_run_results(self, run_to_result):
+    def __init__(self, runs_to_include=None):
+        self._runs_to_include = runs_to_include
+    
+    def get_run_results(self, run_to_result,):
         failing_tests = [run for run,res in run_to_result.items() if 
                          not res.passed]
+
+        if self._runs_to_include is not None:
+            failing_tests = self._runs_to_include
 
         for failing_run in failing_tests:
             # All passing tests, and this one failing test, but no others.

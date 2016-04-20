@@ -9,6 +9,8 @@ import projects
 
 _cache = {}
 
+FeatureObj = namedtuple("FeatureObj", ["key_index", "feature_map"])
+
 def make_feature_file(spectra_file, out_feature_file):
     commandio.get_output(["feature-extractor/feature-extractor", spectra_file,
                           out_feature_file,
@@ -23,9 +25,21 @@ def load(filename):
     with open(filename, "r") as fd:
         features = json.load(fd)
 
-    features = {int(test): v for test,v in features.items()}
-    _cache[filename] = features
-    return features
+    
+    key_index = features["key_index"]
+    feature_map = features["feature_map"]
+    
+    feature_map = {int(failing_test):
+                   {int(passing_test): vec
+                    for passing_test, vec in passing_to_vec.items()}
+                   for failing_test, passing_to_vec in feature_map.items()}
+
+    fobj = FeatureObj(key_index, feature_map)
+    print(key_index)
+    _cache[filename] = fobj
+    return fobj
+
+
 
 
 
