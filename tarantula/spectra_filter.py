@@ -3,6 +3,38 @@ import numpy as np
 import run_result
 
 
+
+class SingleFailingDistanceFilterTopNPercent(object):
+    def __init__(self, feature_obj, feature_name, n_percent_to_keep):
+        self._key_index = feature_obj.key_index
+        self._feature_index = self._key_index.index(feature_name)
+        self._feature_map = feature_obj.feature_map
+        self._feature_name = feature_name
+        self._n_percent = n_percent_to_keep
+
+
+    def filter_tests(self, run_to_result):
+        passing_spectra, failing_spectra = run_result.\
+                                           get_passing_failing(run_to_result)
+        assert len(failing_spectra) == 1
+        failing_test = next(iter(failing_spectra.keys()))
+
+        def get_distance(passing):
+            vec = self._feature_map[failing_test][passing]
+            return vec[self._feature_index]
+        ordered_passing = sorted(passing_spectra.keys(),
+                                 key=get_distance)
+
+        # Find the top n percent, but keep at least 1 test
+        n_to_keep = int(max(float(len(ordered_passing)) * self._n_percent,
+                        1))
+        
+        passing_to_keep = [passing_spectra[test]
+                           for test in ordered_passing[0:n_to_keep]]
+        failing_to_keep = list(failing_spectra.values())
+        return passing_to_keep, failing_to_keep
+
+
 class SingleFailingDistanceFilter(object):
     def __init__(self, feature_obj, feature_name, distance_cutoff):
         self._key_index = feature_obj.key_index

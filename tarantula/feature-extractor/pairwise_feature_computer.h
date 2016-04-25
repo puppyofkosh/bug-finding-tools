@@ -30,9 +30,9 @@ namespace PairWiseFeatureComputer {
     }
 
     const std::vector<std::string> KEY_INDEX = {"normalized_hamming",
-                                                "common_execd_over_total",
-                                                "common_execd_over_failing",
-                                                "common_execd_over_passing"};
+                                                "inv_common_execd_over_total",
+                                                "inv_common_execd_over_failing",
+                                                "inv_common_execd_over_passing"};
 
 
     std::vector<double> get_features(const Spectrum& failing, const Spectrum& passing) {
@@ -64,9 +64,9 @@ namespace PairWiseFeatureComputer {
             double(num_passing_execd);
 
         vector<double> res = {hamming,
-                              common_execd_over_total,
-                              common_execd_over_failing,
-                              common_execd_over_passing};
+                              1.0 - common_execd_over_total,
+                              1.0 - common_execd_over_failing,
+                              1.0 - common_execd_over_passing};
 
         assert(res.size() == KEY_INDEX.size());
         return res;

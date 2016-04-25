@@ -1,14 +1,11 @@
 #! /bin/python
 
-import sys
 from collections import defaultdict
 import pandas as pd
 import argparse
 
 import projects
-import spectra_maker
 import evaluator
-import feature_computer
 import optimizer
 import pd_helper
 
@@ -61,14 +58,14 @@ def print_total_scores(project_name, ranker_type, filter_type, provider_type,
     version_to_score = get_total_scores(project_name, ranker_type, filter_type,
                                         provider_type, versions=versions)
     print("Average score is {0}".format(version_to_score.mean()))
-    print(version_to_score)
+    pd_helper.print_df(version_to_score)
 
 def compare_filter(project_name, ranker_type, filter_type, provider_type):
     print("Computing with filter")
     filter_scores = get_total_scores(project_name, ranker_type, filter_type,
                                      provider_type)
     print("Computing without filter")
-    nofilter_scores = get_total_scores(project_name, "normal", "none",
+    nofilter_scores = get_total_scores(project_name, "tarantula", "none",
                                        provider_type)
 
     results = pd.DataFrame({'nofilter': nofilter_scores,
@@ -78,16 +75,15 @@ def compare_filter(project_name, ranker_type, filter_type, provider_type):
 
     pd_helper.print_df(results)
 
+    filter_bins = get_bin_to_count(filter_scores)
+    nofilter_bins = get_bin_to_count(nofilter_scores)
+    bins = pd.DataFrame({'filter': filter_bins,
+                         'nofilter': nofilter_bins,
+                         'diff': filter_bins - nofilter_bins})
+    pd_helper.print_df(bins)
 
-def get_all_results(ranker_type, filter_type, provider_type):
-    res_ser = pd.Series()
-    for proj in projects.get_siemens_projects():
-        ver_to_score = get_total_scores(proj, ranker_type, filter_type,
-                                        provider_type)
-        ver_to_score.rename(lambda n: proj + "-" + n, inplace=True)
 
-        res_ser = res_ser.append(ver_to_score)
-
+def get_bin_to_count(res_ser):
     BINS = [(0, 0.1), (0.1, 0.2), (0.2, 0.3),
             (0.3, 0.4), (0.4, 0.5), (0.5, 0.6),
             (0.6, 0.7), (0.7, 0.8), (0.8, 0.9),
@@ -103,7 +99,18 @@ def get_all_results(ranker_type, filter_type, provider_type):
     assert bin_to_count_ser.sum() == len(res_ser)
     # Give percentages of how many fall into each bin
     bin_to_count_ser /= len(res_ser)
+    return bin_to_count_ser
 
+def get_all_results(ranker_type, filter_type, provider_type):
+    res_ser = pd.Series()
+    for proj in projects.get_siemens_projects():
+        ver_to_score = get_total_scores(proj, ranker_type, filter_type,
+                                        provider_type)
+        ver_to_score.rename(lambda n: proj + "-" + n, inplace=True)
+
+        res_ser = res_ser.append(ver_to_score)
+
+    bin_to_count_ser = get_bin_to_count(res_ser)
     return res_ser, bin_to_count_ser
 
 def print_all_results(ranker_type, filter_type, provider_type):

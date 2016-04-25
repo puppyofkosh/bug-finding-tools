@@ -61,7 +61,7 @@ def compute_results(run_to_result, ranker_obj,
     return RankerResult(ranks, suspiciousness, line, score)
 
 def get_ranker(project_name, version, ranker_type):
-    if ranker_type == "normal":
+    if ranker_type == "tarantula":
         return tarantula.TarantulaRanker()
     elif ranker_type == "ochaia":
         return tarantula.OchaiaRanker()
@@ -78,16 +78,20 @@ def get_filter(project_name, version, filter_type):
     if filter_type == "none":
         return spectra_filter.TrivialFilter()
 
-    feature_file = feature_computer.get_feature_file(project_name, version)
-    features = feature_computer.load(feature_file)
+    feature_obj = feature_computer.get_feature_vecs(project_name,
+                                                    version)
     if filter_type == "heuristic":
-        return spectra_filter.HeuristicFilter(features)
-    elif filter_type == "learned":
-        v = [-62.3405955 ,  13.86391412,  11.2309994 ,  -4.03151566,
-       -90.7341109 ,   8.03077839, -50.52596326, -36.57490774,
-        73.2524005 ,  78.83498064,  12.20039375,  78.07912836,
-        82.40447128, -63.78238101, -57.65408425]
-        return spectra_filter.DotProductFilter(v, features)
+        return spectra_filter.HeuristicFilter(feature_obj)
+    elif filter_type == "direct_cutoff":
+        return spectra_filter.SingleFailingDistanceFilter(
+            feature_obj,
+            'inv_common_execd_over_passing',
+            0.15)
+    elif filter_type == "topn":
+        return spectra_filter.SingleFailingDistanceFilterTopNPercent(
+            feature_obj,
+            'normalized_hamming',
+            0.3)
 
     raise RuntimeError("Unkown filter {0}".format(filter_type))
 

@@ -35,7 +35,6 @@ def load(filename):
                    for failing_test, passing_to_vec in feature_map.items()}
 
     fobj = FeatureObj(key_index, feature_map)
-    print(key_index)
     _cache[filename] = fobj
     return fobj
 

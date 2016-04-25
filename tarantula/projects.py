@@ -231,7 +231,7 @@ PROJECT_TO_BUGGY_LINES = {
         # the macro is used
         "v13": {118},
         "v14": {118},
-    }
+    },
 }
 
 
